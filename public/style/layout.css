@@ -1,0 +1,83 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
+  background-color: 	#f5b5b5; /* Calm neutral slate */
+  color: 	#333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  gap: 20px; 
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.right-links {
+  display: flex;
+  gap: 30px;
+  flex-wrap: nowrap;
+  margin-right: 60px;
+  align-items: center;
+}
+
+.right-links a {
+  color:	#333333;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  align-items: center;
+}
+
+.right-links a:hover {
+  text-decoration: underline;
+}
+
+.icon {
+  font-size: 16px;
+  line-height: 1;
+  padding-bottom: 8px;
+}
+
+.sidebar {
+  width: 250px;
+  background: #fce4e4;
+  padding-top: 70px; /* Give space below fixed topbar */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  z-index: 999;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 20px;
+  color:#444444;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.sidebar a:hover {
+  background-color: #f1bcbc;
+}
+
+main {
+  margin-left: 260px;
+  padding: 80px 20px 20px; /* Top padding to push below navbar */
+}

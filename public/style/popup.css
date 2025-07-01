@@ -1,0 +1,103 @@
+/* Popup and Overlay Styles */
+.popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  z-index: 100;
+  text-align: left;
+}
+
+.popup h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+  color: #333;
+}
+
+.popup label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+  color: #444;
+}
+
+.popup input,
+.popup select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.popup button {
+  width: 100%;
+  padding: 12px;
+  background-color: #e07c7c;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.popup button:hover {
+  background-color: #c76464;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  z-index: 101;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 5;
+}
+
+.form-group {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+label, input, select {
+  width: 100%;
+  display: block;
+}
+
+input, select {
+  padding: 6px;
+}
+
+.hidden {
+  display: none;
+}

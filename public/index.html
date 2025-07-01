@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up Page</title>
+  <link rel="stylesheet" type="text/css" href="style/style.css">
+  <link rel="stylesheet" type="text/css" href="style/popup.css">
+  
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>SeniorCare Platform</h1>
+    <div class="nav-links">
+      <a href="#" onclick="openPopup('signupPopup')">Sign Up</a>
+      <a href="#" onclick="openPopup('loginPopup')">Login</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="welcome">Welcome to our platform for Seniors and Organisers</div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
+  <!-- Signup Popup -->
+  <div class="popup" id="signupPopup">
+    <span type="button" class="close-btn" onclick="closePopup()">×</span>
+    <h2>Register</h2>
+
+    <label for="role">Select Role:</label>
+    <select id="role" onchange="toggleForm()">
+      <option value="">--Choose--</option>
+      <option value="senior">Senior</option>
+      <option value="staff">Staff</option>
+    </select>
+
+    <form id="signupForm" onsubmit="submitForm(event)">
+      <div id="commonFields">
+        <div class="form-group">
+          <label>Full Name:</label>
+          <input type="text" id="fullName" required />
+        </div>
+
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="email" id="email" required />
+        </div>
+
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" id="password" required />
+        </div>
+
+        <div class="form-group">
+          <label>Profile Image Filename:</label>
+          <input type="text" id="profileImage" />
+        </div>
+      </div>
+
+      <div id="seniorFields" class="hidden">
+        <div class="form-group">
+          <label>Date of Birth:</label>
+          <input type="date" id="dob" />
+        </div>
+
+        <div class="form-group">
+          <label>Interests:</label>
+          <input type="text" id="interests" />
+        </div>
+      </div>
+
+      <div id="staffFields" class="hidden">
+        <div class="form-group">
+          <label>Clinic ID:</label>
+          <input type="text" id="clinicId" placeholder="e.g., C001" />
+        </div>
+        <div class="form-group">
+          <label>Staff ID:</label>
+          <input type="text" id="staffId" placeholder="e.g., CS005" />
+        </div>
+      </div>
+
+      <button class="btn" type="submit">Register</button>
+      <p id="result"></p>
+    </form>
+  </div>
+
+<div class="popup" id="loginPopup">
+  <span type="button" class="close-btn" onclick="closePopup()">×</span>
+  <h2>Login</h2>
+  <form onsubmit="loginUser(event)">
+    <label for="loginRole">Select Role:</label>
+    <select id="loginRole">
+      <option value="senior">Senior</option>
+      <option value="organiser">Staff</option>
+    </select>
+
+    <label>Email:</label>
+    <input type="email" id="loginEmail" required />
+
+    <label>Password:</label>
+    <input type="password" id="loginPassword" required />
+
+    <button class="btn" type="submit">Login</button>
+    <p id="loginResult"></p>
+  </form>
+</div>
+<script src="script/script.js"></script>
+</body>
+</html>
