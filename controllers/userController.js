@@ -1,3 +1,4 @@
+const sql = require("mssql")
 const userModel = require("../models/userModel");
 
 async function registerUser(req, res) {
@@ -26,7 +27,7 @@ async function registerUser(req, res) {
       return res.status(201).json({
         message: "Staff account created successfully",
         data: newStaff,
-        redirect: "/staff.html"
+        redirect: "/staffMain.html"
       });
     }
   } catch (error) {
@@ -91,18 +92,57 @@ async function deleteStaff(req, res) {
 
 async function login(req, res) {
   const { role, email, password } = req.body;
+
+  if (!role || !email || !password) {
+    return res.status(400).json({ error: "Missing role, email, or password" });
+  }
+
   try {
-    const user = await userModel.loginUser(role, email, password);
-    if (user) {
-    return res.json({
-        message: `Welcome, ${user.fullName}`,
-        redirect: role.toLowerCase() === "senior" ? "/seniorMain.html" : "/staffMain.html"
-    });
-    } else {
-      res.status(401).json({ error: "Invalid email or password." });
+    const user = await userModel.loginUser(role.toLowerCase(), email, password);
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password." });
     }
+
+    return res.status(200).json({
+      message: `Welcome, ${user.fullName}`,
+      userId: user.userId,
+      role: role.toLowerCase(),
+      redirect: role.toLowerCase() === "senior" ? "/senior.html" : "/staffMain.html"
+    });
+
   } catch (err) {
-    res.status(500).json({ error: "Login failed" });
+    console.error("Login controller error:", err);
+    return res.status(500).json({ error: "Login failed due to server error" });
+  }
+}
+
+async function getProfile(req, res) {
+  const { role, id } = req.query;
+
+  if (!role || !id) {
+    return res.status(400).json({ error: "Missing role or ID in request" });
+  }
+
+  try {
+    let profile;
+
+    if (role === "senior") {
+      profile = await userModel.getSeniorProfile(id);
+    } else if (role === "staff") {
+      profile = await userModel.getStaffProfile(id);
+    } else {
+      return res.status(400).json({ error: "Invalid role specified" });
+    }
+
+    if (!profile) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(profile);
+  } catch (err) {
+    console.error("Error in getProfile:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -113,6 +153,7 @@ module.exports = {
     deleteSenior,
     deleteStaff,
     login,
+    getProfile,
 };
 
 

@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style/layout.css">
+    <link rel="stylesheet" type="text/css" href="style/popup.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="topbar">
+        <h1>SeniorCare Platform</h1>
+        <div class="right-links">
+            <a href="staffMain.html">Home</a>
+            <a href="about.html">AboutUs</a>
+            <a href="#"  onclick="openPopupProfile()"><span class="icon">👤</span> My Profile</a>
+        </div>
+    </div>
+    <div class="sidebar">
+            <a href="confirmBooking.html">Confirm Booking</a>
+            <a href="doctor.html">Doctors</a>
+            <a href="#" onclick="logout()">🚪 Logout</a>
+    </div>
+    
+     <!-- Profile Popup -->
+    <div class="popup" id="profilePopup">
+        <span class="close-btn" onclick="closePopup()">×</span>
+        <h2>My Profile</h2>
+        <div id="profileContent" >
+        </div>
+    </div>
+    <div id="overlay"></div>
+    
+<script src="script/script.js"></script>
+<script>
+    function logout() {
+    localStorage.clear();
+    alert("Logged out successfully.");
+    window.location.href="index.html";
+    }
+</script>
+</body>
+</html>

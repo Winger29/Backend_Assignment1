@@ -25,7 +25,7 @@ app.delete("/seniors/:id", userController.deleteSenior);
 app.put("/staff/:id", userController.updateStaff);
 // Delete staff
 app.delete("/staff/:id", userController.deleteStaff);
-
+app.get("/profile", userController.getProfile);
 // Booking routes
 app.post("/bookings", bookingController.createBooking); // senior creates booking
 app.get("/bookings/senior/:seniorId", bookingController.getBookingsBySenior); // for senior view

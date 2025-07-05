@@ -202,25 +202,87 @@ async function loginUser(role, email, password) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
+    let query = "";
+    let request = connection.request();
 
-    const table = role === "staff" ? "StaffAccounts" : "Seniors";
-    const query = `
-      SELECT * FROM ${table}
-      WHERE email = @email AND password = @password
-    `;
+    if (role === "senior") {
+      query = `
+        SELECT seniorId AS userId, fullName, email
+        FROM Seniors
+        WHERE email = @Email AND password = @Password
+      `;
+    } else if (role === "staff") {
+      query = `
+        SELECT sa.staffId AS userId, cs.fullName, sa.email
+        FROM StaffAccounts sa
+        JOIN ClinicStaff cs ON sa.staffId = cs.staffId
+        WHERE sa.email = @Email AND sa.password = @Password
+      `;
+    } else {
+      throw new Error("Invalid role");
+    }
 
-    const request = connection.request();
-    request.input("email", sql.VarChar(100), email);
-    request.input("password", sql.VarChar(255), password);
+    request.input("Email", sql.VarChar, email);
+    request.input("Password", sql.VarChar, password);
 
     const result = await request.query(query);
-    return result.recordset[0] || null;
-
-  } catch (error) {
-    console.error("Login error:", error);
-    throw error;
+    return result.recordset[0];
+  } catch (err) {
+    console.error("Error in loginUser:", err);
+    throw err;
   } finally {
-    if (connection) await connection.close().catch(console.error);
+    if (connection) await connection.close();
+  }
+}
+
+
+async function getSeniorProfile(seniorId) {
+    let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const request = connection.request();
+    request.input("seniorId", sql.VarChar, seniorId);
+
+    const result = await request.query(`
+      SELECT seniorId AS userId, fullName, email, dob, interests
+      FROM Seniors
+      WHERE seniorId = @seniorId
+    `);
+    return result.recordset[0];
+  } catch (err) {
+    console.error('Error in getSeniorProfile:', err);
+    throw err;
+  } finally {
+    await sql.close(); // Close the connection
+  }
+}
+
+async function getStaffProfile(staffId) {
+    let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const request = connection.request();
+    request.input("staffId", sql.VarChar, staffId);
+
+    const result = await request.query(`
+      SELECT 
+        cs.staffId AS userId,
+        cs.fullName,
+        sa.email,
+        cs.clinicId,
+        cs.position,
+        sa.profileImage
+      FROM ClinicStaff cs
+      JOIN StaffAccounts sa ON cs.staffId = sa.staffId
+      WHERE cs.staffId = @staffId
+    `);
+
+    return result.recordset[0];
+  } catch (err) {
+    console.error('Error in getStaffProfile:', err);
+    throw err;
+  } finally {
+    await sql.close(); // Close the connection
   }
 }
 
@@ -253,5 +315,7 @@ module.exports={
     deleteSenior,
     deleteStaff,
     loginUser,
+    getSeniorProfile,
+    getStaffProfile,
     checkEmailExists,
 }

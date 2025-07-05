@@ -9,10 +9,16 @@ function insertNavbar() {
         <div class="right-links">
             <a href="senior.html">Home</a>
             <a href="about.html">AboutUs</a>
-            <a href="#" onclick="openProfilePopup()">
-                <span class="icon">👤</span> My Profile</a>
+            <a href="#"  onclick="openPopupProfile()"><span class="icon">👤</span> My Profile</a>
         </div>
         </div>
+        <div class="popup" id="profilePopup">
+        <span class="close-btn" onclick="closePopup()">×</span>
+        <h2>My Profile</h2>
+        <div id="profileContent" >
+        </div>
+        </div>
+        <div id="overlay"></div>
     `;
     document.body.insertAdjacentHTML("afterbegin", topbar);
     }
