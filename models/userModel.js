@@ -165,7 +165,7 @@ async function deleteSenior(seniorId){
         connection = await sql.connect(dbConfig);
         const query = "DELETE FROM Seniors WHERE seniorId=@seniorId";
         const request = connection.request();
-        request.input("seniorId", sql.Varchar(10), seniorId);
+        request.input("seniorId", sql.VarChar(10), seniorId);
         const result = await request.query(query);
         return result; // result.rowsAffected[0] shows affected rows
     } catch (error) {
