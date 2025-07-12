@@ -1,0 +1,79 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style/layout.css">
+    <link rel="stylesheet" type="text/css" href="style/popup.css">
+
+    <title>Staff</title>
+</head>
+<body>
+    <div class="topbar">
+      <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+        <h1>SeniorCare Platform</h1>
+        <div class="right-links">
+            <a href="staff.html">Home</a>
+            <a href="about.html">AboutUs</a>
+            <a href="#"  onclick="openPopupProfile()"><span class="icon">👤</span> My Profile</a>
+        </div>
+    </div>
+    <div class="sidebar">
+            <a href="confirmBooking.html">Confirm Booking</a>
+            <a href="doctor.html">Doctors</a>
+            <a href="#" onclick="logout()">🚪 Logout</a>
+    </div>
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>
+     <!-- Profile Popup -->
+    <div class="popup" id="profilePopup">
+        <span class="close-btn" onclick="closePopup()">×</span>
+        <h2>My Profile</h2>
+        <div id="profileContent" >
+        </div>
+    </div>
+    
+    <div class="popup hidden" id="updateProfilePopup">
+    <span class="close-btn" onclick="closePopup()">×</span>
+    <h2>Edit Profile</h2>
+    <form id="updateForm" onsubmit="updateProfile(event)">
+      <div class="form-group">
+        <label>Full Name:</label>
+        <div class="editable-field">
+          <input type="text" id="editFullName" readonly />
+          <button type="button" onclick="enableEdit('editFullName')">✏️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password:</label>
+        <div class="editable-field">
+          <input type="password" id="editPassword" readonly />
+          <button type="button" onclick="enableEdit('editPassword')">✏️</button>
+        </div>
+      </div>
+      <div id="interestsWrapper">
+        <label>Interests:</label>
+        <div class="editable-field">
+          <input type="text" id="editInterests" readonly />
+          <button type="button" onclick="enableEdit('editInterests')">✏️</button>
+        </div>
+      </div>
+      <div id="positionWrapper">
+        <label>Position:</label>
+        <div class="editable-field">
+          <input type="text" id="editPosition" readonly />
+          <button type="button" onclick="enableEdit('editPosition')">✏️</button>
+        </div>
+      </div>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+  
+<script src="script/script.js"></script>
+<script>
+    function logout() {
+    localStorage.clear();
+    alert("Logged out successfully.");
+    window.location.href="index.html";
+    }
+</script>
+</body>
+</html>

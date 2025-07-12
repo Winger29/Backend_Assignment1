@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Sign Up Page</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="style/style.css">
   <link rel="stylesheet" type="text/css" href="style/popup.css">
   
@@ -11,14 +12,50 @@
 
   <div class="topbar">
     <h1>SeniorCare Platform</h1>
-    <div class="nav-links">
+    <div class="right-links">
       <a href="#" onclick="openPopup('signupPopup')">Sign Up</a>
       <a href="#" onclick="openPopup('loginPopup')">Login</a>
     </div>
   </div>
 
   <div class="main">
-    <div class="welcome">Welcome to our platform for Seniors and Organisers</div>
+    <div class="landing-container">
+  <h2 class="title">Welcome to <span>SeniorCare Platform</span></h2>
+  <p class="subtitle">A digital solution empowering seniors and clinic staff to manage healthcare, social life, and wellness independently.</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <i class="fas fa-calendar-check fa-2x icon"></i>
+      <h3>Appointment Booking</h3>
+      <p>Quickly schedule health checkups at nearby clinics.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-walking fa-2x icon"></i>
+      <h3>Activity Tracker</h3>
+      <p>Track your steps and physical activities daily.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-pills fa-2x icon"></i>
+      <h3>Medication Reminder</h3>
+      <p>Stay on top of your medication schedule with alerts.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-comments fa-2x icon"></i>
+      <h3>Group Chat</h3>
+      <p>Connect with other seniors and social groups.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-cloud-sun fa-2x icon"></i>
+      <h3>Weather & Notes</h3>
+      <p>View weather forecasts and jot down reminders.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-user-md fa-2x icon"></i>
+      <h3>Clinic Dashboard</h3>
+      <p>Organisers can manage bookings and staff easily.</p>
+    </div>
+  </div>
+</div>
   </div>
 
   <!-- Overlay -->
@@ -83,6 +120,7 @@
       </div>
 
       <button class="btn" type="submit">Register</button>
+      <p>Already have an account? <a href="#" onclick="switchToLogin()" style="color: #1976d2; text-decoration: none;">Login</a></p>
       <p id="result"></p>
     </form>
   </div>
@@ -94,7 +132,7 @@
     <label for="loginRole">Select Role:</label>
     <select id="loginRole">
       <option value="senior">Senior</option>
-      <option value="organiser">Staff</option>
+      <option value="staff">Staff</option>
     </select>
 
     <label>Email:</label>
@@ -102,8 +140,10 @@
 
     <label>Password:</label>
     <input type="password" id="loginPassword" required />
-
+    <a href="#" onclick="forgotPassword()" style="color: #1976d2; text-decoration: none;">Forgot password?</a>
+    
     <button class="btn" type="submit">Login</button>
+    <p>Don't have an account? <a href="#" onclick="switchToSignup()" style="color: #1976d2; text-decoration: none;">Create one</a></p>
     <p id="loginResult"></p>
   </form>
 </div>

@@ -1,6 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
-
+const jwt=require("jsonwebtoken");
+require("dotenv").config();
 
 async function createSenior(senior){
     let connection;
@@ -99,20 +100,34 @@ async function updateSenior(seniorId,updatedSenior){
     let connection;
     try{
         connection = await sql.connect(dbConfig);
-        const query=`
-            Update Seniors
-            SET fullName=@fullName,email=@email,password=@password,dob=@dob,interests=@interests,profileImage=@profileImage
-            where seniorId=@seniorId
-        `
-        const request=connection.request();
-        request.input("seniorId",sql.Varchar(10),seniorId);
-        request.input("fullName",sql.Varchar(100),updatedSenior.fullName);
-        request.input("email",sql.VarChar(255),updatedSenior.email);
-        request.input("password",sql.VarChar(100),updatedSenior.password);
-        request.input("dob",sql.Date,updatedSenior.dob);
-        request.input("interests",sql.Text,updatedSenior.interests);
-        const result=await request.query(query);
-        return result;
+        const queryParts = [];
+      const request = connection.request();
+
+    if (updatedSenior.fullName) {
+    queryParts.push("fullName = @fullName");
+    request.input("fullName", sql.VarChar(100), updatedSenior.fullName);
+    }
+    if (updatedSenior.password && updatedSenior.password !== "********") {
+    queryParts.push("password = @password");
+    request.input("password", sql.VarChar(100), updatedSenior.password);
+    }
+    if (updatedSenior.interests) {
+    queryParts.push("interests = @interests");
+    request.input("interests", sql.Text, updatedSenior.interests);
+    }
+
+    if (queryParts.length === 0) {
+        throw new Error("No fields provided for update.");
+        }
+
+    const query = `
+    UPDATE Seniors
+    SET ${queryParts.join(", ")}
+    WHERE seniorId = @seniorId
+    `;
+    request.input("seniorId", sql.VarChar(10), seniorId);
+            const result=await request.query(query);
+            return result;
     }catch(error){
         console.error("Database error (update):", error);
         throw error;
@@ -129,22 +144,50 @@ async function updateStaff(staffId, updatedStaff) {
         const query = `
             UPDATE ClinicStaff
             SET fullName = @fullName,
-                clinicId = @clinicId,
                 position = @position,
-                isRegistered = @isRegistered
             WHERE staffId = @staffId
         `;
 
-        const request = connection.request();
-        request.input('staffId', sql.VarChar(10), staffId);
-        request.input('fullName', sql.VarChar(100), updatedStaff.fullName);
-        request.input('clinicId', sql.VarChar(10), updatedStaff.clinicId);
-        request.input('position', sql.VarChar(50), updatedStaff.position);
-        request.input('isRegistered', sql.Bit, updatedStaff.isRegistered);
+         const csRequest = connection.request();
+    csRequest.input('staffId', sql.VarChar(10), staffId);
+    csRequest.input('fullName', sql.VarChar(100), updatedStaff.fullName);
+    csRequest.input('position', sql.VarChar(50), updatedStaff.position);
+    await csRequest.query(`
+      UPDATE ClinicStaff
+      SET fullName = @fullName, position = @position
+      WHERE staffId = @staffId
+    `);
+
+    // Update StaffAccounts (optional fields)
+    const saFields = [];
+    const saRequest = connection.request();
+    saRequest.input('staffId', sql.VarChar(10), staffId);
+
+    if (updatedStaff.email) {
+      saFields.push('email = @email');
+      saRequest.input('email', sql.VarChar(100), updatedStaff.email);
+    }
+
+    if (updatedStaff.password && updatedStaff.password !== '********') {
+      saFields.push('password = @password');
+      saRequest.input('password', sql.VarChar(255), updatedStaff.password);
+    }
+
+    if (updatedStaff.position) {
+      saFields.push('position= @position');
+      saRequest.input('position', sql.VarChar(255), updatedStaff.position);
+    }
+
+    if (saFields.length > 0) {
+      const query = `
+        UPDATE StaffAccounts
+        SET ${saFields.join(', ')}
+        WHERE staffId = @staffId
+      `;
 
         const result = await request.query(query);
         return result;
-    } catch (error) {
+    } }catch (error) {
         console.error('Database error (updateStaff):', error);
         throw error;
     } finally {
@@ -202,25 +245,102 @@ async function loginUser(role, email, password) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
+    let query = "";
 
-    const table = role === "staff" ? "StaffAccounts" : "Seniors";
-    const query = `
-      SELECT * FROM ${table}
-      WHERE email = @email AND password = @password
-    `;
+    if (role === "senior") {
+      query = `
+        SELECT seniorId AS userId, fullName, email,password
+        FROM Seniors
+        WHERE email = @Email and password=@Password
+      `;
+    } else if (role === "staff") {
+      query = `
+        SELECT sa.staffId AS userId, cs.fullName, sa.email,sa.password
+        FROM StaffAccounts sa
+        JOIN ClinicStaff cs ON sa.staffId = cs.staffId
+        WHERE sa.email = @Email and sa.Password=@password
+      `;
+    } else {
+      throw new Error("Invalid role");
+    }
 
     const request = connection.request();
-    request.input("email", sql.VarChar(100), email);
-    request.input("password", sql.VarChar(255), password);
-
+    request.input("Email", sql.VarChar, email);
+    request.input("Password", sql.VarChar, password);
     const result = await request.query(query);
-    return result.recordset[0] || null;
+
+    const user = result.recordset[0];
+    if (!user) return null;
+
+    const token = jwt.sign(
+      { id: user.userId, role: role },
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    return {
+      userId: user.userId,
+      fullName: user.fullName,
+      email: user.email,
+      role,
+      token,
+    };
 
   } catch (error) {
     console.error("Login error:", error);
     throw error;
   } finally {
     if (connection) await connection.close().catch(console.error);
+  }
+}
+
+async function getSeniorProfile(seniorId) {
+    let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const request = connection.request();
+    request.input("seniorId", sql.VarChar, seniorId);
+
+    const result = await request.query(`
+      SELECT seniorId AS userId, fullName, email, dob, interests
+      FROM Seniors
+      WHERE seniorId = @seniorId
+    `);
+    return result.recordset[0];
+  } catch (err) {
+    console.error('Error in getSeniorProfile:', err);
+    throw err;
+  } finally {
+    await sql.close(); // Close the connection
+  }
+}
+
+async function getStaffProfile(staffId) {
+    let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const request = connection.request();
+    request.input("staffId", sql.VarChar, staffId);
+
+    const result = await request.query(`
+      SELECT 
+        cs.staffId AS userId,
+        cs.fullName,
+        sa.email,
+        cs.clinicId,
+        cs.position,
+        sa.profileImage
+      FROM ClinicStaff cs
+      JOIN StaffAccounts sa ON cs.staffId = sa.staffId
+      WHERE cs.staffId = @staffId
+    `);
+
+    return result.recordset[0];
+  } catch (err) {
+    console.error('Error in getStaffProfile:', err);
+    throw err;
+  } finally {
+    await sql.close(); // Close the connection
   }
 }
 
@@ -253,5 +373,7 @@ module.exports={
     deleteSenior,
     deleteStaff,
     loginUser,
+    getSeniorProfile,
+    getStaffProfile,
     checkEmailExists,
 }

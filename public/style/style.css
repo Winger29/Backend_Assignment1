@@ -26,38 +26,41 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  height: 60px;
+  height: 64px;
   width: 100%;
-  background-color: 	#f5b5b5; /* Calm neutral slate */
-  color: 	#333333;
+  background-color: #ffffff;
+  color: #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 0 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   z-index: 1000;
 }
 
 .topbar h1 {
   margin: 0;
   font-size: 22px;
-  font-weight: bold;
-  white-space: nowrap;
+  font-weight: 600;
 }
 
-.topbar .right-links {
+.right-links {
   display: flex;
+  gap: 24px;
   align-items: center;
-  gap: 20px;
 }
 
 .right-links a {
-  color:	#333333;
+  color: #1a1a1a;
   text-decoration: none;
   font-size: 16px;
   font-weight: 500;
+  transition: color 0.2s;
 }
 
+.right-links a:hover {
+  color: #1976d2;
+}
 /* Hero Section */
 .hero {
   display: flex;
@@ -170,3 +173,70 @@ body {
   color: crimson;
   font-size: 14px;
 }
+
+.landing-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 20px;
+    text-align: center;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.08);
+  }
+
+  .title {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #1976d2;
+  }
+
+  .title span {
+    font-weight: bold;
+    color: #0d47a1;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 40px;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  .icon {
+    color: #1976d2;
+    margin-bottom: 10px;
+  }
+
+  .feature-card h3 {
+    margin: 10px 0;
+    color: #333;
+    font-size: 18px;
+  }
+
+  .feature-card p {
+    color: #666;
+    font-size: 14px;
+  }
+
+  @media (max-width: 600px) {
+    .title { font-size: 22px; }
+    .subtitle { font-size: 14px; }
+  }
