@@ -3,8 +3,9 @@ const sql = require("mssql");
 const dotenv = require("dotenv");
 
 dotenv.config(); 
+const middlewareToken=require("./middlewares/authMiddleware");
 const userController= require("./controllers/userController");
-const bookingController=require("./controllers/bookingController");
+//const bookingController=require("./controllers/bookingController");
 const app = express();
 const port = process.env.PORT || 3000;
 const path = require("path");
@@ -16,21 +17,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.post("/signup", userController.registerUser);
 app.post("/login", userController.login);
 
-// Update senior
-app.put("/seniors/:id", userController.updateSenior);
-// Delete senior
-app.delete("/seniors/:id", userController.deleteSenior);
+app.get("/profile", middlewareToken,userController.getProfile);
+app.put("/profile", middlewareToken, userController.updateProfile);
+app.delete("/profile", middlewareToken, userController.deleteProfile);
 
-// Update staff
-app.put("/staff/:id", userController.updateStaff);
-// Delete staff
-app.delete("/staff/:id", userController.deleteStaff);
-app.get("/profile", userController.getProfile);
 // Booking routes
-app.post("/bookings", bookingController.createBooking); // senior creates booking
-app.get("/bookings/senior/:seniorId", bookingController.getBookingsBySenior); // for senior view
-app.get("/bookings/clinic/:clinicId", bookingController.getBookingsByClinic); // for staff view
-app.put("/bookings/:clinicId/:bookingSeq/status", bookingController.updateBookingStatus); // staff updates status
+//app.post("/bookings", bookingController.createBooking); // senior creates booking
+//app.get("/bookings/senior/:seniorId", bookingController.getBookingsBySenior); // for senior view
+//app.get("/bookings/clinic/:clinicId", bookingController.getBookingsByClinic); // for staff view
+//app.put("/bookings/:clinicId/:bookingSeq/status", bookingController.updateBookingStatus); // staff updates status
 
 app.listen(port, async () => {
   try {

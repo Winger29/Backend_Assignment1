@@ -1,6 +1,7 @@
 const sql = require("mssql")
 const userModel = require("../models/userModel");
-
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.SECRET_KEY;
 async function registerUser(req, res) {
   try {
     const { role,email } = req.body;
@@ -16,18 +17,33 @@ async function registerUser(req, res) {
 
     if (role.toLowerCase() === "senior") {
       const newSenior = await userModel.createSenior(req.body);
+      const token = jwt.sign(
+        { id: newSenior, role: "senior" },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+      );  
       return res.status(201).json({
         message: "Senior account created successfully",
-        data: newSenior,
+        userId: newSenior,
+        role: "senior",
+        token,
         redirect: "/senior.html"
       });
 
     } else if (role.toLowerCase() === "staff") {
       const newStaff = await userModel.registerStaff(req.body);
+      const token = jwt.sign(
+        { id: newStaff, role: "staff" },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+      );
+
       return res.status(201).json({
         message: "Staff account created successfully",
-        data: newStaff,
-        redirect: "/staffMain.html"
+        userId: newStaff,
+        role: "staff",
+        token,
+        redirect: "/staff.html"
       });
     }
   } catch (error) {
@@ -36,57 +52,48 @@ async function registerUser(req, res) {
   }
 }
 
-// === UPDATE SENIOR ===
-async function updateSenior(req, res) {
+async function updateProfile(req, res) {
   try {
-    const seniorId = req.params.id;
-    const updatedSenior = req.body;
-    const result = await userModel.updateSenior(seniorId, updatedSenior);
-    res.status(200).json({ message: "Senior updated successfully", result });
-  } catch (error) {
-    console.error("Controller error (updateSenior):", error);
-    res.status(500).json({ error: "Error updating senior" });
+    const { role, id } = req.user;
+    const updatedData = req.body;
+
+    let result;
+    if (role === "senior") {
+      result = await userModel.updateSenior(id, updatedData);
+    } else if (role === "staff") {
+      result = await userModel.updateStaff(id, updatedData);
+    } else {
+      return res.status(400).json({ error: "Invalid role for update" });
+    }
+
+    res.status(200).json({ message: "Profile updated successfully", result });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ error: "Update failed" });
   }
 }
 
-// === UPDATE ORGANISER ===
-async function updateStaff(req, res) {
+async function deleteProfile(req, res) {
   try {
-    const staffId = req.params.id;
-    const updatedStaff = req.body;
-    const result = await userModel.updateStaff(staffId, updatedStaff);
-    res.status(200).json({ message: "Staff updated successfully", result });
-  } catch (error) {
-    console.error("Controller error (updateStaff):", error);
-    res.status(500).json({ error: "Error updating staff" });
-  }
-}
+    const { role, id } = req.user;
 
-// === DELETE SENIOR ===
-async function deleteSenior(req, res) {
-  try {
-    const seniorId = req.params.id;
-    const result = await userModel.deleteSenior(seniorId);
-    res.status(200).json({ message: "Senior deleted successfully", result });
-  } catch (error) {
-    console.error("Controller error (deleteSenior):", error);
-    res.status(500).json({ error: "Error deleting senior" });
-  }
-}
-
-// === DELETE ORGANISER ===
-async function deleteStaff(req, res) {
-  try {
-    const staffId = req.params.id;
-    const result = await userModel.deleteStaff(staffId);
+    let result;
+    if (role === "senior") {
+      result = await userModel.deleteSenior(id);
+    } else if (role === "staff") {
+      result = await userModel.deleteStaff(id);
+    } else {
+      return res.status(400).json({ error: "Invalid role for deletion" });
+    }
 
     if (result.rowsAffected[0] === 0) {
-      return res.status(404).json({ error: "Staff not found or already deleted" });
+      return res.status(404).json({ error: "Profile not found or already deleted" });
     }
-    res.status(200).json({ message: "Staff deleted successfully", result });
-  } catch (error) {
-    console.error("Controller error (deleteStaff):", error);
-    res.status(500).json({ error: "Error deleting staff" });
+
+    res.status(200).json({ message: "Profile deleted successfully" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ error: "Delete failed" });
   }
 }
 
@@ -96,29 +103,34 @@ async function login(req, res) {
   if (!role || !email || !password) {
     return res.status(400).json({ error: "Missing role, email, or password" });
   }
-
+  
   try {
-    const user = await userModel.loginUser(role.toLowerCase(), email, password);
-
+    const user = await userModel.loginUser(role, email, password);
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
+
+    const token = jwt.sign(
+    { id: user.userId, role: role.toLowerCase() },
+    SECRET_KEY,
+    { expiresIn: "1h" }
+  );
 
     return res.status(200).json({
       message: `Welcome, ${user.fullName}`,
       userId: user.userId,
       role: role.toLowerCase(),
-      redirect: role.toLowerCase() === "senior" ? "/senior.html" : "/staffMain.html"
+      token,
+      redirect: role.toLowerCase() === "senior" ? "/senior.html" : "/staff.html"
     });
 
   } catch (err) {
-    console.error("Login controller error:", err);
-    return res.status(500).json({ error: "Login failed due to server error" });
+    res.status(500).json({ error: "Login failed" });
   }
 }
 
 async function getProfile(req, res) {
-  const { role, id } = req.query;
+  const { role, id } = req.user;
 
   if (!role || !id) {
     return res.status(400).json({ error: "Missing role or ID in request" });
@@ -145,13 +157,10 @@ async function getProfile(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
 module.exports = {
     registerUser,
-    updateSenior,
-    updateStaff,
-    deleteSenior,
-    deleteStaff,
+    updateProfile,
+    deleteProfile,
     login,
     getProfile,
 };

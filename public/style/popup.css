@@ -10,7 +10,7 @@
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   width: 380px;
-  z-index: 100;
+  z-index: 1001;
   text-align: left;
 }
 
@@ -37,6 +37,10 @@
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
+}
+
+.popup.hidden {
+  display: none;
 }
 
 .popup button {
@@ -85,7 +89,7 @@
 }
 
 .form-group {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   text-align: left;
 }
 
@@ -100,4 +104,40 @@ input, select {
 
 .hidden {
   display: none;
+}
+.editable-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.editable-field input {
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.editable-field input:read-only {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.editable-field button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding-top: 4px;
+  font-size: 16px;
+  line-height: 1;
+  width: 40px;
+}
+
+#overlay {
+  z-index: 1000;
+  position: fixed;
+  background-color: rgba(0,0,0,0.4);
 }

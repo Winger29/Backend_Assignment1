@@ -1,83 +1,162 @@
+/* ===== Reset & Font ===== */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f9fafb;
+  color: #2c3e50;
 }
 
+/* ===== Topbar (Header) ===== */
 .topbar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 60px;
+  height: 64px;
   width: 100%;
-  background-color: 	#f5b5b5; /* Calm neutral slate */
-  color: 	#333333;
+  background-color: #ffffff;
+  color: #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  gap: 20px; 
+  padding: 0 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 1002;
 }
 
 .topbar h1 {
-  margin: 0;
+  margin: left 10px;;
   font-size: 22px;
-  font-weight: bold;
-  white-space: nowrap;
+  font-weight: 600;
 }
 
 .right-links {
   display: flex;
-  gap: 30px;
-  flex-wrap: nowrap;
+  gap: 24px;
   margin-right: 60px;
   align-items: center;
 }
 
 .right-links a {
-  color:	#333333;
+  color: #1a1a1a;
   text-decoration: none;
   font-size: 16px;
   font-weight: 500;
-  align-items: center;
+  transition: color 0.2s;
 }
 
 .right-links a:hover {
-  text-decoration: underline;
+  color: #1976d2;
 }
 
-.icon {
-  font-size: 16px;
-  line-height: 1;
-  padding-bottom: 8px;
+/* ===== Sidebar ===== */
+.toggle-sidebar {
+  font-size: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
 }
 
 .sidebar {
-  width: 250px;
-  background: #fce4e4;
-  padding-top: 70px; /* Give space below fixed topbar */
   position: fixed;
   top: 0;
+  left: -220px; /* hide it initially */
+  width: 220px;
+  height: calc(100% - 64px);
+  background: linear-gradient(180deg, #ffe5e5, #fbd4d4);
+  transition: left 0.3s ease-in-out;
+  z-index: 1001;
+  padding-top: 64px; /* below topbar */
+}
+
+.sidebar.open {
   left: 0;
-  height: 100%;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-  z-index: 999;
 }
 
 .sidebar a {
   display: block;
-  padding: 12px 20px;
-  color:#444444;
+  padding: 14px 24px;
+  color: #37474f;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.3s;
 }
 
 .sidebar a:hover {
-  background-color: #f1bcbc;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-left: 3px solid #1976d2;
 }
 
+
+/* ===== Main Content ===== */
 main {
   margin-left: 260px;
-  padding: 80px 20px 20px; /* Top padding to push below navbar */
+  padding: 100px 40px 40px;
+  min-height: 100vh;
+  font-size: 16px;
+  color: #444;
+  max-width: 1000px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+main h2 {
+  font-size: 28px;
+  margin-bottom: 16px;
+  color: #1a237e;
+}
+
+main p {
+  line-height: 1.7;
+  margin: 16px 0;
+  font-size: 16px;
+  color: #455a64;
+}
+
+main ul {
+  margin: 20px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+main ul li {
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 28px;
+  font-size: 16px;
+}
+
+main ul li::before {
+  content: "✔️";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-size: 16px;
+  color: #4caf50;
+}
+
+/* ===== Button Style ===== */
+main button {
+  margin-top: 30px;
+  background-color: #1976d2;
+  color: #ffffff;
+  padding: 12px 28px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+main button:hover {
+  background-color: #1565c0;
+}
+
+/* ===== Animation ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
