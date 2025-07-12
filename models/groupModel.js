@@ -79,13 +79,67 @@ async function updateGroupByID(id, groupData) {
   }
 }
 
-async function deleteGroup(id) {
+// get group details by user joined 
+async function getGroupByUserID(id){
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "select groupName,groupDesc,groupInterest from GroupChat inner join GroupMember on GroupChat.groupID = GroupMember.groupID inner join Seniors on Seniors.seniorId = GroupMember.userID where userID = @id";
+    const request = connection.request();
+    request.input("id", id);
+    const result = await request.query(query);
 
+    if (result.recordset.length === 0) {
+      return null; 
+    }
+
+    return result.recordset;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
+async function deleteGroup(id) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "DELETE FROM GroupChat WHERE groupID = @id";
+    const request = connection.request();
+    request.input("id", id);
+    const result = await request.query(query);
+
+    if (result.rowsAffected[0] === 0) {
+      return null; 
+    }
+
+    return { message: "GroupChat deleted successfully" };
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
 }
 
 module.exports = {
     getAllGroups,
     getGroupByID,
     updateGroupByID,
-    deleteGroup
+    deleteGroup,
+    getGroupByUserID
 }

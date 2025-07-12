@@ -16,19 +16,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+const authenticateToken = require("./middleware/");
+
 
 app.post("/signup", userController.registerUser);
 app.post("/login", userController.login);
 
 // Update senior
-app.put("/seniors/:id", userController.updateSenior);
+app.put("/seniors/:id", userController.updateProfile);
 // Delete senior
-app.delete("/seniors/:id", userController.deleteSenior);
+app.delete("/seniors/:id", userController.deleteProfile);
 
 // Update staff
-app.put("/staff/:id", userController.updateStaff);
+app.put("/staff/:id", userController.updateProfile);
 // Delete staff
-app.delete("/staff/:id", userController.deleteStaff);
+app.delete("/staff/:id", userController.deleteProfile);
 
 // Booking routes
 // app.post("/bookings", bookingController.createBooking); // senior creates booking
@@ -38,6 +40,7 @@ app.delete("/staff/:id", userController.deleteStaff);
 
 // get Groupchats
 app.get("/groupchat", groupController.getAllGroups); 
+app.get("/usergroupchat", authenticateToken, groupController.getGroupByUser);
 app.put("/groupchat/:id", groupController.updateGroup);
 app.delete("/groupchat/:id", groupController.deleteGroup);
 

@@ -11,6 +11,25 @@ async function getAllGroups(req,res) {
       }
 }
 
+async function getGroupByUser(req,res) {
+  try {
+    const userId = req.user.id;
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const usergroupchat = await groupModel.getGroupByUserID(userId);
+    if (!usergroupchat) {
+      return res.status(404).json({ error: "There are no groups associating with user" });
+    }
+
+    res.json(studentsid);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error retrieving user" });
+  }
+}
+
 async function updateGroup(req, res) {
   try{
       const id = parseInt(req.params.id);
@@ -47,8 +66,10 @@ async function deleteGroup(req, res) {
   }
 }
 
+
 module.exports = {
     getAllGroups,
     updateGroup,
-    deleteGroup
+    deleteGroup,
+    getGroupByUser
 }
