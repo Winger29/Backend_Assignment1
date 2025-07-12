@@ -1,14 +1,18 @@
+const path = require("path");
 const express = require("express");
 const sql = require("mssql");
 const dotenv = require("dotenv");
+const cors = require("cors");
+
 
 dotenv.config(); 
 const userController= require("./controllers/userController");
-const bookingController=require("./controllers/bookingController");
+const groupController = require("./controllers/groupController");
+// const bookingController=require("./controllers/bookingController");
 const app = express();
 const port = process.env.PORT || 3000;
-const path = require("path");
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -27,10 +31,15 @@ app.put("/staff/:id", userController.updateStaff);
 app.delete("/staff/:id", userController.deleteStaff);
 
 // Booking routes
-app.post("/bookings", bookingController.createBooking); // senior creates booking
-app.get("/bookings/senior/:seniorId", bookingController.getBookingsBySenior); // for senior view
-app.get("/bookings/clinic/:clinicId", bookingController.getBookingsByClinic); // for staff view
-app.put("/bookings/:clinicId/:bookingSeq/status", bookingController.updateBookingStatus); // staff updates status
+// app.post("/bookings", bookingController.createBooking); // senior creates booking
+// app.get("/bookings/senior/:seniorId", bookingController.getBookingsBySenior); // for senior view
+// app.get("/bookings/clinic/:clinicId", bookingController.getBookingsByClinic); // for staff view
+// app.put("/bookings/:clinicId/:bookingSeq/status", bookingController.updateBookingStatus); // staff updates status
+
+// get Groupchats
+app.get("/groupchat", groupController.getAllGroups); 
+app.put("/groupchat/:id", groupController.updateGroup);
+app.delete("/groupchat/:id", groupController.deleteGroup);
 
 app.listen(port, async () => {
   try {

@@ -27,7 +27,7 @@ function insertSidebar() {
             <a href="activities.html">🏃‍♂️ Physical Activities</a>
             <a href="booking.html">📅 Appointment</a>
             <a href="event.html">🎉 Events</a>
-            <a href="#">💬 Messages</a>
+            <a href="groupchat.html">💬 Messages</a>
             <a href="#">⏰ Reminder</a>
             <a href="#" onclick="logout()">🚪 Logout</a>
         </div>
