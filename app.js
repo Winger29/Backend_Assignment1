@@ -4,8 +4,8 @@ const dotenv = require("dotenv");
 
 dotenv.config(); 
 const middlewareToken=require("./middlewares/authMiddleware");
-const userController= require("./cont rollers/userController");
-const eventController = require("./controllers/eventController");
+const userController= require("./controllers/userController");
+const eventController = require("./controllers/eventsController");
 //const bookingController=require("./controllers/bookingController");
 const app = express();
 const activityRoutes = require('./routes/activityRoutes');
@@ -36,9 +36,9 @@ app.use("/api", activityRoutes);
 app.get("/events", eventController.getAllEvents);
 app.get("/events/:id", eventController.getEventById);
 
-app.post("/events", authMiddleware, eventController.createEvent);
-app.put("/events/:id", authMiddleware, eventController.updateEvent);
-app.delete("/events/:id", authMiddleware, eventController.deleteEvent);
+app.post("/events", eventController.createEvent);
+app.put("/events/:id",  eventController.updateEvent);
+app.delete("/events/:id",  eventController.deleteEvent);
 
 app.listen(port, async () => {
   try {

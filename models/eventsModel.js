@@ -26,7 +26,7 @@ async function getEventById(id) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "SELECT * FROM Events WHERE id = @id";
+    const query = "SELECT * FROM Events WHERE eventId = @id";
     const request = connection.request();
     request.input("id", id);
     const result = await request.query(query);
@@ -99,7 +99,7 @@ async function updateEvent(id,eventData){
         startTime = @startTime,
         endTime = @endTime,
         location = @location
-    WHERE id = @id;
+    WHERE eventId = @id;
     `;
 
     const request = connection.request();
@@ -138,7 +138,7 @@ async function deleteEvent(id){
   try{
     connection = await sql.connect(dbConfig);
     const sqlQuery = 
-    "DELETE FROM Events WHERE id = @id";
+    "DELETE FROM Events WHERE eventId = @id";
     const request = connection.request();
     request.input("id", sql.Int, id);
 
