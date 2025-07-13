@@ -1,12 +1,170 @@
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="style/layout.css">
-    <title>Senior</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Tracker</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 0; }
+    header { background-color: #f6c9c9; padding: 15px 0; display: flex; justify-content: space-around; align-items: center; }
+    header a { text-decoration: none; color: black; font-weight: bold; }
+    header .icon { width: 24px; height: 24px; border: 2px solid black; border-radius: 50%; }
+    .container { padding: 20px; }
+    .btn { padding: 10px 20px; background: #aac7f0; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+    .card { background: #ddd; padding: 15px; margin: 10px auto; width: 300px; border-radius: 5px; text-align: left; }
+    .card .edit { float: right; text-decoration: underline; cursor: pointer; }
+  </style>
 </head>
 <body>
-    <!-- Load layout script -->
-    <script src="script/layout.js"></script>
+  <header>
+    <div class="icon"></div>
+    <a href="#">Home</a>
+    <a href="#">About Us</a>
+    <a href="#">Feedback</a>
+  </header>
+
+  <div class="container">
+    <button style="background:#ccc; font-weight:bold; padding:10px 30px; border:none; border-radius:5px;">Activity Tracker</button>
+    <div id="activityList"></div>
+    <button class="btn" onclick="showForm(false)">Add Activity</button>
+  </div>
+
+  <!-- Add Activity Popup Form -->
+   <div id="activityForm" style="display:none; background:#eee; padding:20px; margin:20px auto; width:300px; border-radius:10px;">
+    <h3>Add New Activity</h3>
+    <input type="text" id="activityName" placeholder="Activity Name" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+    <input type="number" id="duration" placeholder="Duration (mins)" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+    <input type="date" id="activityDate" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+    <textarea id="notes" placeholder="Notes (optional)" style="width:100%; padding:8px; margin-bottom:10px;"></textarea><br>
+    <button class="btn" onclick="submitActivity()">Save</button>
+    <button class="btn" id="deleteBtn" style="background:#f99; margin-left:10px; display:none;" onclick="deleteActivity()">Delete</button>
+    <button class="btn" style="background:#ccc; margin-left:10px;" onclick="closeForm()">Cancel</button>
+   </div>
+
+   <div id="dashboard" style="background:#f2f2f2; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
+    <h3>Your Activity Summary</h3>
+    <p id="totalActivities">🧾 Total Activities: 0</p>
+    <p id="totalDuration">⏱️ Total Time Spent: 0 mins</p>
+    <p id="lastActivityDate">📅 Last Activity: -</p>
+   </div>
+
+  <script>
+  let activities = [];
+  let editingIndex = null;
+
+  function renderActivities() {
+    const container = document.getElementById('activityList');
+    container.innerHTML = '';
+
+    if (activities.length === 0) {
+      container.innerHTML = '<p>No activity recorded yet.</p>';
+      return;
+    }
+
+    const title = document.createElement('h3');
+    title.textContent = 'Your activities';
+    container.appendChild(title);
+
+    activities.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <strong>Title:</strong> ${item.activityName} <br>
+        <strong>Duration:</strong> ${item.duration} mins <br>
+        <strong>Date:</strong> ${item.date} <br>
+        <strong>Description:</strong> ${item.notes || '......'}
+        <span class='edit' onclick="editActivity(${index})">Edit</span>
+      `;
+      container.appendChild(card);
+    });
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    const total = activities.length;
+    const totalDuration = activities.reduce((sum, item) => sum + item.duration, 0);
+    const latestDate = activities.reduce((latest, item) => {
+        return new Date(item.date) > new Date(latest) ? item.date : latest;
+    }, activities.length > 0 ? activities[0].date : '-');
+    
+    document.getElementById('totalActivities').textContent = `🧾 Total Activities: ${total}`;
+    document.getElementById('totalDuration').textContent = `⏱️ Total Time Spent: ${totalDuration} mins`;
+    document.getElementById('lastActivityDate').textContent = `📅 Last Activity: ${total > 0 ? latestDate : '-'}`;
+}
+
+
+  function submitActivity() {
+    const activityName = document.getElementById('activityName').value.trim();
+    const duration = parseInt(document.getElementById('duration').value);
+    const date = document.getElementById('activityDate').value;
+    const notes = document.getElementById('notes').value.trim();
+
+    if (!activityName || !duration || !date) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const newActivity = { activityName, duration, date, notes };
+
+    if (editingIndex !== null) {
+      activities[editingIndex] = newActivity;
+    } else {
+      activities.push(newActivity);
+    }
+
+    resetForm();
+    renderActivities();
+    updateDashboard();
+  }
+
+  function editActivity(index) {
+    const activity = activities[index];
+    document.getElementById('activityName').value = activity.activityName;
+    document.getElementById('duration').value = activity.duration;
+    document.getElementById('activityDate').value = activity.date;
+    document.getElementById('notes').value = activity.notes;
+
+    editingIndex = index;
+    showForm(true);
+  }
+
+  function deleteActivity() {
+    if (editingIndex !== null) {
+      activities.splice(editingIndex, 1);
+      resetForm();
+      renderActivities();
+      updateDashboard();
+    }
+  }
+
+  function resetForm() {
+    editingIndex = null;
+    document.getElementById('activityForm').style.display = 'none';
+    document.getElementById('activityName').value = '';
+    document.getElementById('duration').value = '';
+    document.getElementById('activityDate').value = '';
+    document.getElementById('notes').value = '';
+    document.getElementById('deleteBtn').style.display = 'none';
+  }
+
+  function showForm(isEditing = false) {
+  if (!isEditing) {
+    editingIndex = null; // make sure it's not editing an old one
+    document.getElementById('activityName').value = '';
+    document.getElementById('duration').value = '';
+    document.getElementById('activityDate').value = '';
+    document.getElementById('notes').value = '';
+  }
+
+  document.getElementById('activityForm').style.display = 'block';
+  document.getElementById('deleteBtn').style.display = isEditing ? 'inline-block' : 'none';
+}
+
+
+  function closeForm() {
+    resetForm();
+  }
+
+  window.onload = renderActivities;
+  </script>
 </body>
 </html>

@@ -7,6 +7,7 @@ const middlewareToken=require("./middlewares/authMiddleware");
 const userController= require("./controllers/userController");
 //const bookingController=require("./controllers/bookingController");
 const app = express();
+const activityRoutes = require('./routes/activityRoutes');
 const port = process.env.PORT || 3000;
 const path = require("path");
 
@@ -20,6 +21,9 @@ app.post("/login", userController.login);
 app.get("/profile", middlewareToken,userController.getProfile);
 app.put("/profile", middlewareToken, userController.updateProfile);
 app.delete("/profile", middlewareToken, userController.deleteProfile);
+
+// Activity Tracker routes (for elderly)
+app.use("/api", activityRoutes); 
 
 // Booking routes
 //app.post("/bookings", bookingController.createBooking); // senior creates booking

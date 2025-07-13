@@ -15,5 +15,13 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mssql": "^11.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Winger29/Backend_Assignment1.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Winger29/Backend_Assignment1/issues"
+  },
+  "homepage": "https://github.com/Winger29/Backend_Assignment1#readme"
 }
