@@ -11,6 +11,7 @@ const app = express();
 const activityRoutes = require('./routes/activityRoutes');
 const port = process.env.PORT || 3000;
 const path = require("path");
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
