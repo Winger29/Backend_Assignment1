@@ -73,6 +73,7 @@ async function loginUser(event) {
 
     const result = await res.json();
     if (res.ok && result.redirect) {
+      localStorage.setItem("token",result.token);
       window.location.href = result.redirect;
     } else {
       document.getElementById("loginResult").innerText = result.error || "Login failed.";

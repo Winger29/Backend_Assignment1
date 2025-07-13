@@ -23,6 +23,68 @@ async function getAllGroups() {
       }
 }
 
+async function createGroup(groupData, userID) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query =
+      "INSERT INTO GroupChat (groupName, groupDesc, groupInterest) VALUES (@name, @description, @interest) SELECT SCOPE_IDENTITY() AS id;";
+    const request = connection.request();
+    request.input("name", groupData.name);
+    request.input("description", groupData.description);
+    request.input("interest",groupData.interest);
+    const result = await request.query(query);
+
+    const groupID = result.recordset[0].id;
+    
+    const request2 = connection.request();
+    const query2 ="insert into GroupMember (groupID, userID, roles) values (@gID, @uID, @role);"
+    request2.input("gID",groupID);
+    request2.input("uID",userID);
+    request2.input("role","owner");
+    const memberRes = await request2.query(query2);
+    if (result.rowsAffected[0] > 0 && memberRes.rowsAffected[0] > 0) {
+      return await getGroupByID(groupID)};
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
+async function createMember(memberData) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query ="insert into GroupMember (groupID, userID, roles) values (@gID, @uID, @role);"
+    const request = connection.request();
+    request.input("gID", memberData.groupID);
+    request.input("uID", groupData.userID);
+    const result = await request.query(query);
+
+    const groupID = result.recordset[0].id;
+    return await getGroupByID(groupID);
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
 async function getGroupByID(id) {
   let connection;
   try {
@@ -33,7 +95,7 @@ async function getGroupByID(id) {
     const result = await request.query(query);
 
     if (result.recordset.length === 0) {
-      return null; // Groupchat not found
+      return null; 
     }
 
     return result.recordset[0];
@@ -141,5 +203,6 @@ module.exports = {
     getGroupByID,
     updateGroupByID,
     deleteGroup,
-    getGroupByUserID
+    getGroupByUserID,
+    createGroup
 }

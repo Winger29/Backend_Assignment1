@@ -110,7 +110,7 @@ async function login(req, res) {
     }
 
     const token = jwt.sign(
-    { id: user.userId, role: role.toLowerCase() },
+    { id: user.seniorId, role: role.toLowerCase() },
     SECRET_KEY,
     { expiresIn: "1h" });
 

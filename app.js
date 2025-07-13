@@ -12,11 +12,12 @@ const groupController = require("./controllers/groupController");
 const app = express();
 const port = process.env.PORT || 3000;
 
+
+const authenticateToken = require("./middleware/jwtTransfer");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
-const authenticateToken = require("./middleware/");
 
 
 app.post("/signup", userController.registerUser);
@@ -39,8 +40,9 @@ app.delete("/staff/:id", userController.deleteProfile);
 // app.put("/bookings/:clinicId/:bookingSeq/status", bookingController.updateBookingStatus); // staff updates status
 
 // get Groupchats
+app.post("/groupchat",authenticateToken.authenticateToken,groupController.createGroup);
 app.get("/groupchat", groupController.getAllGroups); 
-app.get("/usergroupchat", authenticateToken, groupController.getGroupByUser);
+app.get("/usergroupchat", authenticateToken.authenticateToken, groupController.getGroupByUser);
 app.put("/groupchat/:id", groupController.updateGroup);
 app.delete("/groupchat/:id", groupController.deleteGroup);
 
