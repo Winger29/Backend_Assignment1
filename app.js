@@ -4,7 +4,8 @@ const dotenv = require("dotenv");
 
 dotenv.config(); 
 const middlewareToken=require("./middlewares/authMiddleware");
-const userController= require("./controllers/userController");
+const userController= require("./cont rollers/userController");
+const eventController = require("./controllers/eventController");
 //const bookingController=require("./controllers/bookingController");
 const app = express();
 const activityRoutes = require('./routes/activityRoutes');
@@ -30,6 +31,14 @@ app.use("/api", activityRoutes);
 //app.get("/bookings/senior/:seniorId", bookingController.getBookingsBySenior); // for senior view
 //app.get("/bookings/clinic/:clinicId", bookingController.getBookingsByClinic); // for staff view
 //app.put("/bookings/:clinicId/:bookingSeq/status", bookingController.updateBookingStatus); // staff updates status
+
+// Events routes
+app.get("/events", eventController.getAllEvents);
+app.get("/events/:id", eventController.getEventById);
+
+app.post("/events", authMiddleware, eventController.createEvent);
+app.put("/events/:id", authMiddleware, eventController.updateEvent);
+app.delete("/events/:id", authMiddleware, eventController.deleteEvent);
 
 app.listen(port, async () => {
   try {
