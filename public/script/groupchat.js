@@ -6,11 +6,8 @@ let userID = "";
 
 if (token) {
     try{ 
-        console.log(token);
         const split = JSON.parse(atob(token.split('.')[1]));
-        console.log(split);
         userID = split.id;
-        console.log(userID)
         } catch(e) {
             console.error("Invalid token, check if its correct")
         }
