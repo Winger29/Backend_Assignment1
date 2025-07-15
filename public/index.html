@@ -71,6 +71,7 @@
       <option value="">--Choose--</option>
       <option value="senior">Senior</option>
       <option value="staff">Staff</option>
+      <option value="organiser">Organiser</option>
     </select>
 
     <form id="signupForm" onsubmit="submitForm(event)">
@@ -90,13 +91,14 @@
           <input type="password" id="password" required />
         </div>
 
+        
+      </div>
+
+      <div id="seniorFields" class="hidden">
         <div class="form-group">
           <label>Profile Image Filename:</label>
           <input type="text" id="profileImage" />
         </div>
-      </div>
-
-      <div id="seniorFields" class="hidden">
         <div class="form-group">
           <label>Date of Birth:</label>
           <input type="date" id="dob" />
@@ -110,6 +112,10 @@
 
       <div id="staffFields" class="hidden">
         <div class="form-group">
+          <label>Profile Image Filename:</label>
+          <input type="text" id="profileImage" />
+        </div>
+        <div class="form-group">
           <label>Clinic ID:</label>
           <input type="text" id="clinicId" placeholder="e.g., C001" />
         </div>
@@ -118,7 +124,12 @@
           <input type="text" id="staffId" placeholder="e.g., CS005" />
         </div>
       </div>
-
+      <div id="organiserFields" class="hidden">
+        <div class="form-group">
+          <label>Contact Number:</label>
+          <input type="text" id="contactNumber" required />
+        </div>
+      </div>
       <button class="btn" type="submit">Register</button>
       <p>Already have an account? <a href="#" onclick="switchToLogin()" style="color: #1976d2; text-decoration: none;">Login</a></p>
       <p id="result"></p>
@@ -133,6 +144,7 @@
     <select id="loginRole">
       <option value="senior">Senior</option>
       <option value="staff">Staff</option>
+      <option value="organiser">Organiser</option>
     </select>
 
     <label>Email:</label>
