@@ -14,11 +14,12 @@ async function fetchEvents() {
     events.forEach(event => {
       const div = document.createElement("div");
       div.classList.add("event-card");
+      div.id = `event-${event.eventId}`;
 
       div.innerHTML = `
         <h2>${event.title}</h2>
-        <p><strong>Date:</strong> ${event.eventDate}</p>
-        <p><strong>Time:</strong> ${event.startTime} - ${event.endTime}</p>
+        <p><strong>Date:</strong> ${formatDate(event.eventDate)}</p>
+        <p><strong>Time:</strong> ${event.startTime} – ${event.endTime}</p>
         <p><strong>Location:</strong> ${event.location}</p>
         <button onclick="deleteEvent(${event.eventId})">Delete</button>
         <button onclick='showEditForm(${JSON.stringify(event)})'>Edit</button>
@@ -36,11 +37,9 @@ async function deleteEvent(id) {
   if (!confirm("Are you sure you want to delete this event?")) return;
 
   try {
-    const res = await fetch(`/events/${id}`, {
-      method: "DELETE"
-    });
+    const res = await fetch(`/events/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete event");
-    fetchEvents(); // Refresh the list
+    fetchEvents();
   } catch (err) {
     console.error("Delete error:", err);
     alert("Failed to delete event.");
@@ -53,25 +52,55 @@ function showEditForm(event) {
   const form = document.createElement("form");
   form.innerHTML = `
     <h3>Edit Event: ${event.title}</h3>
-    <label>Title: <input name="title" value="${event.title}" /></label><br/>
-    <label>Date: <input type="date" name="eventDate" value="${event.eventDate}" /></label><br/>
-    <label>Start Time: <input type="time" name="startTime" value="${event.startTime}" /></label><br/>
-    <label>End Time: <input type="time" name="endTime" value="${event.endTime}" /></label><br/>
-    <label>Location: <input name="location" value="${event.location}" /></label><br/>
+    <label>Title:<br/> <input name="title" value="${event.title}" required /></label><br/><br/>
+    <label>Date:<br/> <input type="date" name="eventDate" value="${event.eventDate.split('T')[0]}" required /></label><br/><br/>
+    <label>Start Time:<br/> <input type="text" name="startTime" required /></label><br/><br/>
+    <label>End Time:<br/> <input type="text" name="endTime" required /></label><br/><br/>
+    <label>Location:<br/> <input name="location" value="${event.location}" required /></label><br/><br/>
     <button type="submit">Save</button>
     <button type="button" onclick="fetchEvents()">Cancel</button>
   `;
 
+  container.innerHTML = "";
+  container.appendChild(form);
+
+  const startInput = form.querySelector('input[name="startTime"]');
+  const endInput = form.querySelector('input[name="endTime"]');
+
+  flatpickr(startInput, {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i:S",
+    time_24hr: true,
+    defaultDate: event.startTime
+  });
+
+  flatpickr(endInput, {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i:S",
+    time_24hr: true,
+    defaultDate: event.endTime
+  });
+
   form.onsubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
+    const start = formData.get("startTime");
+    const end = formData.get("endTime");
+
+    if (!isEndTimeValid(start, end)) {
+      alert("End time must be later than start time.");
+      return;
+    }
+
     const updated = {
       title: formData.get("title"),
       eventDate: formData.get("eventDate"),
-      startTime: formData.get("startTime"),
-      endTime: formData.get("endTime"),
+      startTime: start,
+      endTime: end,
       location: formData.get("location"),
-      organiserId: event.organiserId // reuse existing
+      organiserId: event.organiserId
     };
 
     try {
@@ -88,7 +117,25 @@ function showEditForm(event) {
       alert("Failed to update event.");
     }
   };
+}
 
-  container.innerHTML = "";
-  container.appendChild(form);
+function isEndTimeValid(startTime, endTime) {
+  if (!startTime || !endTime) return false;
+
+  const [sh, sm, ss] = startTime.split(":").map(Number);
+  const [eh, em, es] = endTime.split(":").map(Number);
+
+  const startSec = sh * 3600 + sm * 60 + ss;
+  const endSec = eh * 3600 + em * 60 + es;
+
+  return endSec > startSec;
+}
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-SG", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
 }

@@ -30,6 +30,9 @@ async function createEvent(req, res) {
     res.status(201).json(newEvent);
   } catch (error) {
     console.error("Controller error:", error);
+    if (error.message && error.message.includes("Invalid time format")) {
+      return res.status(400).json({ error: error.message });
+    }
     res.status(500).json({ error: "Failed to create event." });
   }
 }
@@ -46,6 +49,9 @@ async function updateEvent(req, res) {
     res.status(200).json(updatedEvent);
   } catch (error) {
     console.error("Controller error:", error);
+    if (error.message && error.message.includes("Invalid time format")) {
+      return res.status(400).json({ error: error.message });
+    }
     res.status(500).json({ error: "Error updating event" });
   }
 }
