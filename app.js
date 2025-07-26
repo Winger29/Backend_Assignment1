@@ -32,7 +32,7 @@ app.put("/bookings/:clinicId/:bookingDate/:bookingSeq", middlewareToken, booking
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, bookingController.updateBookingTime);
 
 //Staff management for Booking
-app.get("/staff/clinic-bookings", middlewareToken, clinicController.getDoctorsForStaffClinic);
+app.get("/staff/clinic-bookings", middlewareToken, clinicController.getBookingsForStaff);
 app.get("/staff/clinic-info", middlewareToken, clinicController.getClinicInfoForStaff);
 app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.cancelBooking);
 app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);

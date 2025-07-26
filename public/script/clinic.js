@@ -181,11 +181,6 @@ function renderDoctorsTable(doctors) {
   });
 }
 
-function showBookingSection() {
-  document.getElementById("bookingSection").style.display = "block";
-  document.getElementById("doctorSection").style.display = "none";
-  fetchClinicBookings(); // Refresh if needed
-}
 
 async function loadClinicInfoAndDoctors() {
   const token = localStorage.getItem("token");
