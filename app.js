@@ -6,6 +6,7 @@ dotenv.config();
 const middlewareToken=require("./middlewares/authMiddleware");
 const userController= require("./controllers/userController");
 const bookingController=require("./controllers/bookingController");
+const clinicController=require("./controllers/clinicController");
 const app = express();
 const port = process.env.PORT || 3000;
 const path = require("path");
@@ -30,6 +31,11 @@ app.get("/my-bookings",middlewareToken,bookingController.getMyBookings);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq", middlewareToken, bookingController.cancelBooking);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, bookingController.updateBookingTime);
 
+//Staff management for Booking
+app.get("/staff/clinic-bookings", middlewareToken, clinicController.getDoctorsForStaffClinic);
+app.get("/staff/clinic-info", middlewareToken, clinicController.getClinicInfoForStaff);
+app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.cancelBooking);
+app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);
 app.listen(port, async () => {
   try {
     await sql.connect(require("./dbConfig"));
