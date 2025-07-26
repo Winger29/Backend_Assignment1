@@ -1,17 +1,18 @@
-/* Popup and Overlay Styles */
+/* Warm Themed Popup */
 .popup {
   display: none;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #ffffff;
+  background: #fff8f0; /* soft peach */
   padding: 30px 40px;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   width: 380px;
   z-index: 1001;
   text-align: left;
+  max-height: 90vh; /* limits popup height to 90% of screen */
 }
 
 .popup h2 {
@@ -19,34 +20,30 @@
   margin-bottom: 20px;
   font-size: 24px;
   text-align: center;
-  color: #333;
+  color: #d17842;
 }
 
 .popup label {
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-weight: 600;
+  margin-bottom: 2px;
   display: block;
-  color: #444;
+  color: #5a4330;
 }
 
 .popup input,
 .popup select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
+  padding: 8px;
+  margin-bottom: 8px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #e0c2b3;
   font-size: 14px;
-}
-
-.popup.hidden {
-  display: none;
+  background-color: #fffdfc;
+  color: #3e2f26;
 }
 
 .popup button {
-  width: 100%;
-  padding: 12px;
-  background-color: #e07c7c;
+  background-color: #e46f39;
   color: white;
   font-weight: bold;
   border: none;
@@ -54,10 +51,14 @@
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
+  padding: 10px 24px;
+  display: block;
+  margin: 12px auto 16px auto; /* spacing above and below */
+  width: auto; /* remove full width */
 }
 
 .popup button:hover {
-  background-color: #c76464;
+  background-color: #cf5f2a;
 }
 
 .close-btn {
@@ -68,15 +69,16 @@
   border: none;
   font-size: 24px;
   font-weight: bold;
-  color: #888;
+  color: #b5875a;
   cursor: pointer;
   z-index: 101;
 }
 
 .close-btn:hover {
-  color: #000;
+  color: #7a4d27;
 }
 
+/* Overlay */
 .overlay {
   display: none;
   position: fixed;
@@ -84,27 +86,17 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 5;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
 }
 
+/* Form Groups */
 .form-group {
   margin-bottom: 16px;
   text-align: left;
 }
 
-label, input, select {
-  width: 100%;
-  display: block;
-}
-
-input, select {
-  padding: 6px;
-}
-
-.hidden {
-  display: none;
-}
+/* Editable Fields */
 .editable-field {
   display: flex;
   align-items: center;
@@ -116,13 +108,13 @@ input, select {
   flex: 1;
   padding: 8px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #e0c2b3;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: #fffdfc;
 }
 
 .editable-field input:read-only {
-  background-color: #f0f0f0;
+  background-color: #f5e8df;
   cursor: not-allowed;
 }
 
@@ -136,8 +128,20 @@ input, select {
   width: 40px;
 }
 
-#overlay {
-  z-index: 1000;
-  position: fixed;
-  background-color: rgba(0,0,0,0.4);
+/* Utility */
+.hidden {
+  display: none;
+}
+
+.required {
+  color: #d9534f;
+  font-weight: bold;
+  cursor: help; 
+}
+
+.optional {
+  color: #998675;
+  font-style: italic;
+  font-size: 13px;
+  margin-left: 4px;
 }

@@ -5,7 +5,8 @@ const dotenv = require("dotenv");
 dotenv.config(); 
 const middlewareToken=require("./middlewares/authMiddleware");
 const userController= require("./controllers/userController");
-//const bookingController=require("./controllers/bookingController");
+const bookingController=require("./controllers/bookingController");
+const clinicController=require("./controllers/clinicController");
 const app = express();
 const port = process.env.PORT || 3000;
 const path = require("path");
@@ -22,11 +23,19 @@ app.put("/profile", middlewareToken, userController.updateProfile);
 app.delete("/profile", middlewareToken, userController.deleteProfile);
 
 // Booking routes
-//app.post("/bookings", bookingController.createBooking); // senior creates booking
-//app.get("/bookings/senior/:seniorId", bookingController.getBookingsBySenior); // for senior view
-//app.get("/bookings/clinic/:clinicId", bookingController.getBookingsByClinic); // for staff view
-//app.put("/bookings/:clinicId/:bookingSeq/status", bookingController.updateBookingStatus); // staff updates status
+app.get("/clinics", bookingController.getAllClinics);
+app.get("/doctors", bookingController.getDoctorsByClinicId);
+app.get("/availability", bookingController.getAvailableSlots);
+app.post("/book",middlewareToken, bookingController.createBooking); 
+app.get("/my-bookings",middlewareToken,bookingController.getMyBookings);
+app.put("/bookings/:clinicId/:bookingDate/:bookingSeq", middlewareToken, bookingController.cancelBooking);
+app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, bookingController.updateBookingTime);
 
+//Staff management for Booking
+app.get("/staff/clinic-bookings", middlewareToken, clinicController.getBookingsForStaff);
+app.get("/staff/clinic-info", middlewareToken, clinicController.getClinicInfoForStaff);
+app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.cancelBooking);
+app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);
 app.listen(port, async () => {
   try {
     await sql.connect(require("./dbConfig"));
