@@ -79,13 +79,13 @@ async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId,
       `);
 
     const nextSeq = seqResult.recordset[0].nextSeq;
-
+    const timeOnly = new Date(`1970-01-01T${appointmentTime}Z`);
     // Insert the new booking
     await connection.request()
       .input("clinicId", sql.VarChar, clinicId)
       .input("bookingDate", sql.Date, bookingDate)
       .input("bookingSeq", sql.Int, nextSeq)
-      .input("appointmentTime", sql.Time, appointmentTime)
+      .input("appointmentTime", sql.Time, timeOnly)
       .input("doctorId", sql.VarChar, doctorId)
       .input("userId", sql.VarChar, userId)
       .input("phone", sql.VarChar, phone)
@@ -261,6 +261,34 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
   }
 }
 
+async function checkExistingBooking({ clinicId, doctorId, bookingDate, appointmentTime, userId }) {
+  let connection;
+  try{
+    connection = await sql.connect(dbConfig);
+
+    const result = await connection.request()
+    .input("clinicId", sql.VarChar(10), clinicId)
+    .input("doctorId", sql.VarChar(10), doctorId)
+    .input("bookingDate", sql.Date, bookingDate)
+    .input("appointmentTime", sql.Time, new Date(`1970-01-01T${appointmentTime}Z`))
+    .input("userId", sql.VarChar(10), userId)
+    .query(`
+      SELECT COUNT(*) AS count FROM Booking
+      WHERE clinicId = @clinicId
+        AND doctorId = @doctorId
+        AND bookingDate = @bookingDate
+        AND appointmentTime = @appointmentTime
+        AND userId = @userId
+        AND status NOT IN ('cancelled')
+    `);
+
+    return result.recordset[0].count > 0;
+    }catch(err){
+    throw err;
+    }finally{
+      if (connection) await connection.close();
+    }
+}
 
 module.exports = {
     getAllClinics,
@@ -269,5 +297,6 @@ module.exports = {
     createBooking,
     fetchBookingsBySeniorId,
     cancelBooking,
-    updateBookingTime
+    updateBookingTime,
+    checkExistingBooking
 };

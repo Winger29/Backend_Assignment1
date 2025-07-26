@@ -51,6 +51,20 @@ async function loadDoctorsByClinicId(clinicId) {
   }
 }
 
+function formatTime(timeStr) {
+  if (!timeStr || typeof timeStr !== "string") return "Invalid Time";
+
+  const [hourStr, minuteStr] = timeStr.split(":");
+  const hour = parseInt(hourStr, 10);
+  const minute = parseInt(minuteStr, 10);
+
+  if (isNaN(hour) || isNaN(minute)) return "Invalid Time";
+
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+  return `${formattedHour}:${minute.toString().padStart(2, "0")} ${ampm}`;
+}
+
 // Load time slots based on selected doctor, clinic and date
 async function loadTimeSlots() {
   const clinicId =  document.getElementById("clinicSearch").value;
@@ -68,9 +82,14 @@ async function loadTimeSlots() {
     const select = document.getElementById("timeSlot");
     select.innerHTML = "";
     slots.forEach(slot => {
-      const opt = document.createElement("option");
-      opt.value = slot.availableTime;
-      opt.textContent = slot.availableTime;
+    const isoTime = new Date(slot.availableTime).toISOString();
+    const rawTime = isoTime.split("T")[1].split("Z")[0]; // → "10:00:00.000"
+    const [hours, minutes] = rawTime.split(":");
+    const sqlTime = `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}:00`; // Ensure full format for SQL
+
+    const opt = document.createElement("option");
+    opt.value = sqlTime;  // this will be sent to the server!
+    opt.textContent = formatTime(sqlTime);  // still display user-friendly
       select.appendChild(opt);
     });
   } catch (err) {

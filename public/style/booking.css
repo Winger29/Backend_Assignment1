@@ -7,7 +7,7 @@
 
 .booking-card {
   background-color: #fff;
-  border-left: 6px solid #0077cc;
+  border-left: 6px solid #e46f39;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   border-radius: 12px;
   padding: 1rem 1.5rem;
@@ -28,21 +28,22 @@
   font-weight: bold;
   padding: 0.2rem 0.6rem;
   border-radius: 5px;
+  font-size: 0.9rem;
 }
 
 .status.pending {
   background-color: #fff3cd;
-  color: #856404;
+  color: #c86b1f;
 }
 
 .status.confirmed {
   background-color: #d4edda;
-  color: #155724;
+  color: #2e7d32;
 }
 
 .status.cancelled {
   background-color: #f8d7da;
-  color: #721c24;
+  color: #b71c1c;
 }
 
 .card-buttons {
@@ -56,6 +57,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .card-buttons button:hover {
@@ -63,26 +65,11 @@
 }
 
 .card-buttons button:nth-child(1) {
-  background-color: #007bff;
+  background-color: #e46f39;
   color: white;
 }
 
 .card-buttons button:nth-child(2) {
-  background-color: #dc3545;
+  background-color: #d9534f;
   color: white;
 }
-
-.popup-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.popup-buttons button {
-  flex: 1;
-  padding: 10px;
-  font-size: 16px;
-  cursor: pointer;
-}
-

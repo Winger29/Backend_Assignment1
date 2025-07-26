@@ -65,6 +65,19 @@ async function createBooking(req, res) {
   }
 
   try {
+    const conflict = await bookingModel.checkExistingBooking({
+      clinicId,
+      doctorId,
+      bookingDate,
+      appointmentTime,
+      userId
+    });
+
+    if (conflict) {
+      return res.status(400).json({
+        error: "You already have a booking at this time for this clinic and doctor."
+      });
+    }
     const result = await bookingModel.createBooking({
       clinicId,
       doctorId,
