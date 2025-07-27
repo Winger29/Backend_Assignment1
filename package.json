@@ -10,12 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-<<<<<<< HEAD
     "bcrypt": "^6.0.0",
-    "dotenv": "^16.5.0",
-=======
     "dotenv": "^16.6.1",
->>>>>>> f2a9fad12202cc88ec880c45b886768f1d5b5824
     "express": "^5.1.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
