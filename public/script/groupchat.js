@@ -43,6 +43,23 @@ async function searchGroupByName(name) {
   }
 }
 
+async function searchAndLoadMessages(groupName) {
+  const groupData = await searchGroupByName(groupName);
+  if (!groupData || !groupData.id) {
+    console.warn("Group not found or missing ID.");
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.innerHTML = '<p class="no-messages">Group not found.</p>';
+    return;
+  }
+
+  const groupNameDisplay = document.getElementById('groupNameDisplay');
+  if (groupNameDisplay) {
+    groupNameDisplay.textContent = groupData.groupName || groupName;
+  }
+
+  await loadMessagesForGroup(groupData.id);
+}
+
 async function loadMessagesForGroup(groupId) {
   const chatMessages = document.getElementById('chat-messages');
   chatMessages.innerHTML = ""; // Clear previous messages
@@ -87,22 +104,7 @@ async function loadMessagesForGroup(groupId) {
   }
 }
 
-async function searchAndLoadMessages(groupName) {
-  const groupData = await searchGroupByName(groupName);
-  if (!groupData || !groupData.id) {
-    console.warn("Group not found or missing ID.");
-    const chatMessages = document.getElementById('chat-messages');
-    chatMessages.innerHTML = '<p class="no-messages">Group not found.</p>';
-    return;
-  }
 
-  const groupNameDisplay = document.getElementById('groupNameDisplay');
-  if (groupNameDisplay) {
-    groupNameDisplay.textContent = groupData.groupName || groupName;
-  }
-
-  await loadMessagesForGroup(groupData.id);
-}
 
 
 async function getGroupByUser() {
@@ -143,23 +145,10 @@ async function getGroupByUser() {
                       item.classList.remove('active')
                   );
                   li.classList.add('active');
-
-                  li.addEventListener('click', () => {
-                    // Select the group visually
-                    document.querySelectorAll('.custom-group-item').forEach(item =>
-                      item.classList.remove('active')
-                    );
-                    li.classList.add('active');
-                  
-                    // Update the group name display
-                    const groupNameDisplay = document.getElementById('groupNameDisplay');
-                    groupNameDisplay.textContent = groupchat.groupName || 'Unnamed Group';
                   
                     // Load messages for this group
                     loadMessagesForGroup(groupchat.id);
                   });
-
-                });
 
               li.appendChild(groupNameDiv);
               li.appendChild(lastMessageDiv);
