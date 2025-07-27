@@ -59,32 +59,6 @@ async function createGroup(groupData, userID) {
   }
 }
 
-async function createMember(memberData) {
-  let connection;
-  try {
-    connection = await sql.connect(dbConfig);
-    const query ="insert into GroupMember (groupID, userID, roles) values (@gID, @uID, @role);"
-    const request = connection.request();
-    request.input("gID", memberData.groupID);
-    request.input("uID", groupData.userID);
-    const result = await request.query(query);
-
-    const groupID = result.recordset[0].id;
-    return await getGroupByID(groupID);
-  } catch (error) {
-    console.error("Database error:", error);
-    throw error;
-  } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
-  }
-}
-
 async function getGroupByID(id) {
   let connection;
   try {
@@ -112,6 +86,35 @@ async function getGroupByID(id) {
     }
   }
 }
+
+async function getGroupByName(Name) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "SELECT groupName,groupDesc,groupInterest FROM GroupChat WHERE groupName = @name";
+    const request = connection.request();
+    request.input("name", Name );
+    const result = await request.query(query);
+
+    if (result.recordset.length === 0) {
+      return null; 
+    }
+
+    return result.recordset[0];
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
 
 
 async function updateGroupByID(id, groupData) {
@@ -201,6 +204,7 @@ async function deleteGroup(id) {
 module.exports = {
     getAllGroups,
     getGroupByID,
+    getGroupByName,
     updateGroupByID,
     deleteGroup,
     getGroupByUserID,

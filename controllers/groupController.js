@@ -44,6 +44,25 @@ async function getGroupByUser(req,res) {
   }
 }
 
+async function getGroupByName(req,res){
+  try {
+    const groupName = req.params.name;
+    if (!groupName) {
+      return res.status(400).json({ error: "Invalid group name" });
+    }
+
+    const group = await groupModel.getGroupByName(groupName);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    res.json(group);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error retrieving group" });
+  }
+}
+
 async function updateGroup(req, res) {
   try{
       const id = parseInt(req.params.id);
@@ -86,5 +105,6 @@ module.exports = {
     updateGroup,
     deleteGroup,
     getGroupByUser,
+    getGroupByName,
     createGroup
 }

@@ -16,16 +16,17 @@ else {
     console.log("No token found")
 }
 
+
 async function getGroupByUser() {
     if (!userID) {
-        console.error("User not available")
+        console.error("User not available");
         return;
     }
 
-    try{
-        const response = await fetch(`${apibase}/usergroupchat`,{
+    try {
+        const response = await fetch(`${apibase}/usergroupchat`, {
             method: 'GET',
-            headers:{
+            headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-type": 'application/json'
             }
@@ -34,17 +35,89 @@ async function getGroupByUser() {
         if (response.ok) {
             const group = await response.json();
             grouplist.innerHTML = "";
+
             group.forEach(groupchat => {
-                const li = document.createElement('li');
-                li.className = 'custom-group-item';
-                li.textContent = groupchat.groupName || 'error, check code';
-                grouplist.appendChild(li);
-            });
+              const li = document.createElement('li');
+              li.className = 'custom-group-item position-relative';
+          
+              const groupNameDiv = document.createElement('div');
+              groupNameDiv.className = 'group-name';
+              groupNameDiv.textContent = groupchat.groupName || 'Unnamed Group';
+          
+              const lastMessageDiv = document.createElement('div');
+              lastMessageDiv.className = 'last-message';
+              lastMessageDiv.textContent = groupchat.lastMessage || 'No messages yet.';
+          
+              // Create the 3-dot menu button with an image icon
+              const optionsBtn = document.createElement('button');
+              optionsBtn.className = 'options-btn';
+              optionsBtn.type = 'button'; // prevent default submit behavior
+          
+              const img = document.createElement('img');
+              img.src = 'images/horizontal_3dot.svg';  // <-- Replace with your 3-dot icon path
+              img.alt = 'Options';
+              img.className = 'options-icon';
+              optionsBtn.appendChild(img);
+          
+              // Dropdown menu container
+              const dropdownMenu = document.createElement('div');
+              dropdownMenu.className = 'dropdown-menu hidden';
+              dropdownMenu.innerHTML = `
+                  <div class="dropdown-item">Edit</div>
+                  <div class="dropdown-item">Delete</div>
+              `;
+          
+              // Toggle dropdown on button click
+              optionsBtn.addEventListener('click', (e) => {
+                  e.stopPropagation(); // prevent li click
+                  const isHidden = dropdownMenu.classList.contains('hidden');
+          
+                  // Close all other dropdowns first
+                  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                      menu.classList.add('hidden');
+                  });
+          
+                  // Toggle current dropdown
+                  if (isHidden) {
+                      dropdownMenu.classList.remove('hidden');
+                  } else {
+                      dropdownMenu.classList.add('hidden');
+                  }
+              });
+          
+              // Close dropdown if clicking outside of li
+              li.addEventListener('click', () => {
+                  // This is for selecting the group
+                  document.querySelectorAll('.custom-group-item').forEach(item =>
+                      item.classList.remove('active')
+                  );
+                  li.classList.add('active');
+          
+                  // Close any dropdown open within this li
+                  dropdownMenu.classList.add('hidden');
+              });
+          
+              // Close dropdown on clicking outside li or dropdown
+              document.addEventListener('click', (e) => {
+                  if (!li.contains(e.target)) {
+                      dropdownMenu.classList.add('hidden');
+                  }
+              });
+          
+              li.appendChild(groupNameDiv);
+              li.appendChild(lastMessageDiv);
+              li.appendChild(optionsBtn);
+              li.appendChild(dropdownMenu);
+          
+              grouplist.appendChild(li);
+          });
+          
         }
-    } catch(err) {
-        console.error("Failed to fetch properly")
+    } catch (err) {
+        console.error("Failed to fetch properly", err);
     }
 }
+
 
 function showCreateGroupForm() {
     const restorepoint = mainwrapper.innerHTML;
@@ -123,6 +196,27 @@ function showCreateGroupForm() {
   });
   }
 
+// gets the group name and which group is clicked on
+document.getElementById('custom-group-list').addEventListener('click', (e) => {
+  const item = e.target.closest('.custom-group-item');
+  if (!item) return;
+
+  document.querySelectorAll('.custom-group-item').forEach(i => i.classList.remove('active'));
+  item.classList.add('active');
+
+  const groupName = item.querySelector('.group-name')?.textContent.trim() || 'Unnamed group';
+  console.log('Clicked group name:', groupName);
+
+  // Show group name in the chat area box
+  const nameDisplay = document.getElementById('group-name-display');
+  nameDisplay.textContent = groupName;
+  nameDisplay.style.display = 'block';
+});
 
 
-document.addEventListener("DOMContentLoaded",getGroupByUser);
+
+
+  window.onload = () => {
+    getGroupByUser();
+  };
+  

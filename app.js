@@ -10,6 +10,7 @@ const middlewareToken=require("./middlewares/authMiddleware");
 const userController= require("./controllers/userController");
 const bookingController=require("./controllers/bookingController");
 const clinicController=require("./controllers/clinicController");
+const groupController = require("./controllers/groupController");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -51,8 +52,10 @@ app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareT
 app.post("/groupchat",authenticateToken.authenticateToken,groupController.createGroup);
 app.get("/groupchat", groupController.getAllGroups); 
 app.get("/usergroupchat", authenticateToken.authenticateToken, groupController.getGroupByUser);
+app.get("/groupchat/:name", groupController.getGroupByName);
 app.put("/groupchat/:id", groupController.updateGroup);
 app.delete("/groupchat/:id", groupController.deleteGroup);
+
 
 app.listen(port, async () => {
   try {
