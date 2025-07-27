@@ -33,7 +33,7 @@ function insertNavbar() {
       <div class="form-group">
         <label>Password:</label>
         <div class="editable-field">
-          <input type="password" id="editPassword" readonly />
+          <input type="password" id="editPassword" value="********" required readonly />
           <button type="button" onclick="enableEdit('editPassword')">✏️</button>
         </div>
       </div>
@@ -50,6 +50,11 @@ function insertNavbar() {
           <input type="text" id="editPosition" readonly />
           <button type="button" onclick="enableEdit('editPosition')">✏️</button>
         </div>
+      </div>
+      <div id="contactNumberWrapper" style="display:none">
+        <label for="editContactNumber">Contact Number:</label>
+        <input type="text" id="editContactNumber" readonly />
+        <button type="button" onclick="enableEdit('editPosition')">✏️</button>
       </div>
       <button type="submit">Save Changes</button>
     </form>
@@ -68,7 +73,7 @@ function insertSidebar() {
             <a href="senior.html">🏠 Dashboard</a>
             <a href="activities.html">🏃‍♂️ Physical Activities</a>
             <a href="booking.html">📅 Appointment</a>
-            <a href="event.html">🎉 Events</a>
+            <a href="organiser.html">🎉 Events</a>
             <a href="#">💬 Messages</a>
             <a href="#">⏰ Reminder</a>
             <a href="#" onclick="logout()">🚪 Logout</a>
@@ -78,12 +83,6 @@ function insertSidebar() {
     }
 }
 
-// Optional: Logout handler
-function logout() {
-  localStorage.clear();
-  alert("Logged out successfully.");
-  window.location.href="index.html";
-}
 
 // Call insertion functions
 insertNavbar();

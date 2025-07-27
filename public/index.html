@@ -4,59 +4,116 @@
   <meta charset="UTF-8">
   <title>Sign Up Page</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="style/style.css">
   <link rel="stylesheet" type="text/css" href="style/popup.css">
   
 </head>
 <body>
-
-  <div class="topbar">
-    <h1>SeniorCare Platform</h1>
-    <div class="right-links">
-      <a href="#" onclick="openPopup('signupPopup')">Sign Up</a>
-      <a href="#" onclick="openPopup('loginPopup')">Login</a>
-    </div>
+  <header class="top-header">
+  <div class="left-nav">
+    <div class="logo"><i class="fas fa-heart"></i> <span>SeniorCare Platform</span></div>
   </div>
+  <div class="center-nav">
+    <a href="#features">Features</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="right-nav">
+    <a href="#" class="btn-link" onclick="openPopup('loginPopup')">Login</a>
+    <a href="#" class="btn-link" onclick="openPopup('signupPopup')">Sign Up</a>
+  </div>
+</header>
+  
 
-  <div class="main">
-    <div class="landing-container">
-  <h2 class="title">Welcome to <span>SeniorCare Platform</span></h2>
-  <p class="subtitle">A digital solution empowering seniors and clinic staff to manage healthcare, social life, and wellness independently.</p>
+  <section class="hero">
+    <div class="badge"><i class="fas fa-heart"></i> Trusted by 10,000+ seniors</div>
+    <h1>Welcome to <span>SeniorCare Platform</span></h1>
+    <p>A digital solution empowering seniors and clinic staff to manage healthcare, social life, and wellness independently.</p>
+    <div class="hero-buttons">
+      <button class="cta-btn">Get Started Today</button>
+      <button class="cta-btn" style="background: white; color: #1976d2; border: 2px solid #1976d2;">Watch Demo</button>
+    </div>
+  </section>
 
-  <div class="feature-grid">
+  <section id="features" class="features-section" ;">
+  <h2 style="color: #3e2f26;">Everything You Need for Better Health Management</h2>
+  <p style="color: #5a4330;">Our comprehensive platform provides all the tools seniors need to maintain independence and stay connected with their healthcare providers.</p>
+  <div class="features-grid">
     <div class="feature-card">
-      <i class="fas fa-calendar-check fa-2x icon"></i>
+      <i class="fas fa-calendar-check fa-2x" ; margin-bottom: 12px;"></i>
       <h3>Appointment Booking</h3>
       <p>Quickly schedule health checkups at nearby clinics.</p>
     </div>
     <div class="feature-card">
-      <i class="fas fa-walking fa-2x icon"></i>
+      <i class="fas fa-walking fa-2x" ></i>
       <h3>Activity Tracker</h3>
       <p>Track your steps and physical activities daily.</p>
     </div>
     <div class="feature-card">
-      <i class="fas fa-pills fa-2x icon"></i>
+      <i class="fas fa-pills fa-2x"  ></i>
       <h3>Medication Reminder</h3>
       <p>Stay on top of your medication schedule with alerts.</p>
     </div>
     <div class="feature-card">
-      <i class="fas fa-comments fa-2x icon"></i>
+      <i class="fas fa-comments fa-2x" ></i>
       <h3>Group Chat</h3>
       <p>Connect with other seniors and social groups.</p>
     </div>
     <div class="feature-card">
-      <i class="fas fa-cloud-sun fa-2x icon"></i>
+      <i class="fas fa-cloud-sun fa-2x" ></i>
       <h3>Weather & Notes</h3>
       <p>View weather forecasts and jot down reminders.</p>
     </div>
     <div class="feature-card">
-      <i class="fas fa-user-md fa-2x icon"></i>
+      <i class="fas fa-user-md fa-2x" ></i>
       <h3>Clinic Dashboard</h3>
       <p>Organisers can manage bookings and staff easily.</p>
     </div>
   </div>
-</div>
-  </div>
+</section>
+
+  <section class="why-choose">
+    <h2>Why Choose SeniorCare Platform?</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <h3>⏱ Save Time</h3>
+        <p>Streamlined processes reduce administrative burden</p>
+      </div>
+      <div class="why-card">
+        <h3>👥 Stay Connected</h3>
+        <p>Build community and maintain social connections</p>
+      </div>
+      <div class="why-card">
+        <h3>🛡 Secure & Private</h3>
+        <p>Your health data is protected with enterprise-grade security</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <h4>💙 SeniorCare Platform</h4>
+      <p>Empowering seniors with digital tools for better healthcare management, social connections, and independent living.</p>
+      <p>💛 Made with care for seniors</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact Info</h4>
+      <p>📞 1-800-SENIOR-CARE</p>
+      <p>✉️ support@seniorcare.com</p>
+      <p>📍 Available Nationwide</p>
+    </div>
+  </footer>
+  <div class="footer-note">© 2024 SeniorCare Platform. All rights reserved. | HIPAA Compliant Healthcare Technology</div>
 
   <!-- Overlay -->
   <div class="overlay" id="overlay" onclick="closePopup()"></div>
@@ -71,39 +128,42 @@
       <option value="">--Choose--</option>
       <option value="senior">Senior</option>
       <option value="staff">Staff</option>
+      <option value="organiser">Organiser</option>
     </select>
 
     <form id="signupForm" onsubmit="submitForm(event)">
       <div id="commonFields">
         <div class="form-group">
-          <label>Full Name:</label>
+          <label for="fullName">Full Name: <span class="required" title="This field is required">*</span></label>
           <input type="text" id="fullName" required />
         </div>
 
         <div class="form-group">
-          <label>Email:</label>
+          <label for="email">Email: <span class="required" title="This field is required">*</span></label>
           <input type="email" id="email" required />
         </div>
 
         <div class="form-group">
-          <label>Password:</label>
+          <label for="password">Password: <span class="required" title="This field is required">*</span></label>
           <input type="password" id="password" required />
         </div>
 
-        <div class="form-group">
-          <label>Profile Image Filename:</label>
-          <input type="text" id="profileImage" />
-        </div>
+        
       </div>
 
       <div id="seniorFields" class="hidden">
         <div class="form-group">
-          <label>Date of Birth:</label>
-          <input type="date" id="dob" />
+          <label for="profileImage">Profile Image Filename: <span class="optional" title="This field is required">(Optional)</span></label>
+          <input type="text" id="profileImage" />
+        </div>
+        
+        <div class="form-group">
+          <label for="date of birth">Date of Birth: <span class="required" title="This field is required">*</span></label>
+          <input type="date" id="dob" required/>
         </div>
 
         <div class="form-group">
-          <label>Interests:</label>
+          <label for="interests">Interests: <span class="required" title="This field is required">*</label>
           <input type="text" id="interests" />
         </div>
       </div>
@@ -114,11 +174,16 @@
           <input type="text" id="clinicId" placeholder="e.g., C001" />
         </div>
         <div class="form-group">
-          <label>Staff ID:</label>
-          <input type="text" id="staffId" placeholder="e.g., CS005" />
+          <label for="staffId">Staff ID: <span class="required" title="This field is required">*</span></label>
+          <input type="text" id="staffId" placeholder="e.g., CS005"  required/>
         </div>
       </div>
-
+      <div id="organiserFields" class="hidden">
+        <div class="form-group">
+          <label for="contactNumber">Contact Number: <span class="required" title="This field is required">*</span></label>
+          <input type="text" id="contactNumber" required />
+        </div>
+      </div>
       <button class="btn" type="submit">Register</button>
       <p>Already have an account? <a href="#" onclick="switchToLogin()" style="color: #1976d2; text-decoration: none;">Login</a></p>
       <p id="result"></p>
@@ -133,6 +198,7 @@
     <select id="loginRole">
       <option value="senior">Senior</option>
       <option value="staff">Staff</option>
+      <option value="organiser">Organiser</option>
     </select>
 
     <label>Email:</label>

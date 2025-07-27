@@ -4,12 +4,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style/layout.css">
     <link rel="stylesheet" type="text/css" href="style/popup.css">
-
-    <title>Staff</title>
+    <link rel="stylesheet" type="text/css" href="style/clinic.css">
+    <title>Document</title>
 </head>
 <body>
     <div class="topbar">
-      <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+        
+        <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
         <h1>SeniorCare Platform</h1>
         <div class="right-links">
             <a href="staff.html">Home</a>
@@ -18,8 +19,8 @@
         </div>
     </div>
     <div class="sidebar">
-            <a href="confirmBooking.html">Confirm Booking</a>
-            <a href="doctor.html">Doctors</a>
+            <a href="staff.html">Confirm Booking</a>
+            <a href="#" onclick="fetchDoctorsForClinic()">Doctors</a>
             <a href="#" onclick="logout()">🚪 Logout</a>
     </div>
     <div class="overlay" id="overlay" onclick="closePopup()"></div>
@@ -30,7 +31,65 @@
         <div id="profileContent" >
         </div>
     </div>
-    
+    <div class="overlay" id="overlay" onclick="closePopup()"></div>div class="overlay" id="overlay" onclick="closePopup()"></div>
+     <!-- Profile Popup -->
+    <div class="popup" id="profilePopup">
+        <span class="close-btn" onclick="closePopup()">×</span>
+        <h2>My Profile</h2>
+        <div id="profileContent" >
+        </div>
+    </div>
+    <div id="overlay"></div>
+    <main id="mainContent" class="content-section" >
+    <section id="welcomeSection">
+      <h1 style="color: #e46f39;">Welcome, <span id="staffName">Staff</span>!</h1>
+      <p>You are logged in as <span class="badge">Clinic Staff</span></p>
+    </section>
+
+    <div class="dashboard-grid">
+      <!-- Clinic Info -->
+      <div class="card clinic-info">
+        <h3>📍 Your Clinic</h3>
+        <p><strong>Clinic Name:</strong> <span id="clinicName">-</span></p>
+        <p><strong>Location:</strong> <span id="clinicLocation">-</span></p>
+        <p><strong>Assigned Doctors:</strong></p>
+        <ul id="doctorList">
+          <li>No doctors assigned yet</li>
+        </ul>
+      </div>
+
+      <div class="dashboard-cards">
+        <div class="dashboard-tile pending">
+          <div class="icon">🕒</div>
+          <h4>Pending Bookings</h4>
+          <p>Review and approve pending appointment requests</p>
+          <button onclick="showPendingBookings()">Manage Bookings</button>
+        </div>
+
+        <div class="dashboard-tile confirmed">
+          <div class="icon">✅</div>
+          <h4>Confirmed Schedule</h4>
+          <p>View all confirmed appointments and schedules</p>
+          <button class="view-btn" onclick="showConfirmedBookings()">View Schedule</button>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box blue">
+        👥 <div><strong id="pendingCount">0</strong></div>
+        <div>Pending</div>
+      </div>
+      <div class="stat-box yellow">
+        📅 <div><strong id="todayCount">0</strong></div>
+        <div>Today</div>
+      </div>
+      <div class="stat-box green">
+        ✅ <div><strong id="weekCount">0</strong></div>
+        <div>This Week</div>
+      </div>
+    </div>
+</main>
+
     <div class="popup hidden" id="updateProfilePopup">
     <span class="close-btn" onclick="closePopup()">×</span>
     <h2>Edit Profile</h2>
@@ -63,11 +122,49 @@
           <button type="button" onclick="enableEdit('editPosition')">✏️</button>
         </div>
       </div>
+      <div id="contactNumberWrapper" style="display:none">
+        <label for="editContactNumber">Contact Number:</label>
+        <input type="text" id="editContactNumber">
+      </div>
       <button type="submit">Save Changes</button>
     </form>
   </div>
+
   
+  <div id="bookingTableContainer" class="content-section hidden">
+    <button onclick="backToDashboard()" class="action-btn secondary">⬅ Back to Dashboard</button>  
+    <h3 id="tableTitle">Bookings</h3>
+    <div class="filter-bar">
+    <div id="filterControls" class="hidden">
+      <input type="text" id="searchInput" placeholder="Search by name..." />
+      <select id="doctorFilter"></select>
+      <input type="date" id="startDate" />
+      <input type="date" id="endDate" />
+      <button onclick="applyFilters()">Apply Filters</button>
+      </div>
+    </div>
+
+
+  <table id="bookingTable">
+    <thead>
+      <tr>
+        <th>Senior</th>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Phone</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+</div>
+
 <script src="script/script.js"></script>
+<script src="script/clinic.js"></script>
 <script>
     function logout() {
     localStorage.clear();

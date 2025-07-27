@@ -13,7 +13,7 @@ body {
   left: 0;
   height: 64px;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #fff5e5;
   color: #1a1a1a;
   display: flex;
   justify-content: space-between;
@@ -45,7 +45,7 @@ body {
 }
 
 .right-links a:hover {
-  color: #1976d2;
+  color: #e46f39;
 }
 
 /* ===== Sidebar ===== */
@@ -63,7 +63,7 @@ body {
   left: -220px; /* hide it initially */
   width: 220px;
   height: calc(100% - 64px);
-  background: linear-gradient(180deg, #ffe5e5, #fbd4d4);
+  background: linear-gradient(180deg, #fff5e5, #ffe4cc);
   transition: left 0.3s ease-in-out;
   z-index: 1001;
   padding-top: 64px; /* below topbar */
@@ -85,8 +85,8 @@ body {
 
 .sidebar a:hover {
   background-color: #e3f2fd;
-  color: #1976d2;
-  border-left: 3px solid #1976d2;
+  color: #e46f39;
+  border-left: 3px solid #e46f39;
 }
 
 
@@ -104,7 +104,7 @@ main {
 main h2 {
   font-size: 28px;
   margin-bottom: 16px;
-  color: #1a237e;
+  color: #e46f39;
 }
 
 main p {
@@ -139,7 +139,7 @@ main ul li::before {
 /* ===== Button Style ===== */
 main button {
   margin-top: 30px;
-  background-color: #1976d2;
+  background-color: #e46f39;
   color: #ffffff;
   padding: 12px 28px;
   border: none;
@@ -152,7 +152,7 @@ main button {
 }
 
 main button:hover {
-  background-color: #1565c0;
+  background-color: #cf5f2a;
 }
 
 /* ===== Animation ===== */
