@@ -13,6 +13,7 @@ const userController = require("./controllers/userController");
 const bookingController = require("./controllers/bookingController");
 const clinicController = require("./controllers/clinicController");
 const groupController = require("./controllers/groupController");
+const msgController = require("./controllers/messageController");
 
 const app = express();
 const server = http.createServer(app); // 👈 Create HTTP server from Express
@@ -60,6 +61,9 @@ app.get("/usergroupchat", authenticateToken.authenticateToken, groupController.g
 app.get("/groupchat/:name", groupController.getGroupByName);
 app.put("/groupchat/:id", groupController.updateGroup);
 app.delete("/groupchat/:id", groupController.deleteGroup);
+
+// grp chat messages 
+app.get("/messages/:groupID" , msgController.getMsgBygID);
 
 // ────── Socket.IO Setup ──────
 io.on('connection', (socket) => {

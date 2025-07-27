@@ -6,7 +6,8 @@ async function getMessageBygID(id) {
     let connection;
     try {
       connection = await sql.connect(dbConfig);
-      const query = "SELECT groupName,groupDesc,groupInterest FROM GroupChat WHERE groupID = @id";
+      const query = "select Seniors.fullName, groupmessages.message, groupmessages.msgtime from groupmessages inner join Seniors on Seniors.seniorId = groupmessages.userid where groupid = @id order by groupmessages.msgtime;";
+
       const request = connection.request();
       request.input("id", id );
       const result = await request.query(query);
@@ -15,7 +16,7 @@ async function getMessageBygID(id) {
         return null; 
       }
   
-      return result.recordset[0];
+      return result.recordset;
     } catch (error) {
       console.error("Database error:", error);
       throw error;

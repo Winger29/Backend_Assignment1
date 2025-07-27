@@ -280,6 +280,28 @@
   background-color: #f0f0f0;
 }
 
+.chat-message {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background-color: #f1f1f1;
+}
+
+.message-user {
+  font-weight: bold;
+}
+
+.message-text {
+  margin: 4px 0;
+}
+
+.message-time {
+  font-size: 0.8em;
+  color: gray;
+  text-align: right;
+}
+
+
 </style>
 </head>
 <body>
@@ -289,7 +311,6 @@
         <input type="text" id="groupSearchInput" placeholder="Search groups..." />
       </div>
       <ul class="custom-group-list group-list" id="custom-group-list">
-        <!-- Group list items dynamically inserted here -->
       </ul>
       <button id="createGroupBtn" style="margin:10px;" onclick="showCreateGroupForm()">+ Create New Group</button>
     </div>
@@ -307,7 +328,6 @@
           </div>          
           </div>          
           <div class="chat-messages" id="chat-messages">
-            <!-- Messages will go here -->
           </div>
         </div>
 

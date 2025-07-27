@@ -18,6 +18,93 @@ else {
     console.log("No token found")
 }
 
+
+
+async function searchGroupByName(name) {
+  try {
+    const response = await fetch(`${apibase}/groupchat/${encodeURIComponent(name)}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log("Group API result:", result);
+      return result || null; 
+    } else {
+      console.warn("API responded with", response.status);
+      return null;
+    }
+  } catch (err) {
+    console.error("Error fetching group by name:", err);
+    return null;
+  }
+}
+
+async function loadMessagesForGroup(groupId) {
+  const chatMessages = document.getElementById('chat-messages');
+  chatMessages.innerHTML = ""; // Clear previous messages
+
+  try {
+    const response = await fetch(`${apibase}/messages/${groupId}`, {
+      method: 'GET',
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch messages");
+    }
+
+    const messages = await response.json();
+
+    if (!messages || messages.length === 0) {
+      chatMessages.innerHTML = '<p class="no-messages">No messages in this group yet.</p>';
+      return;
+    }
+
+    messages.forEach(msg => {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-message';
+
+      // You can customize the markup as needed
+      msgDiv.innerHTML = `
+        <div class="message-user">${msg.fullName}</div>
+        <div class="message-text">${msg.message}</div>
+        <div class="message-time">${new Date(msg.msgtime).toLocaleString()}</div>
+      `;
+
+      chatMessages.appendChild(msgDiv);
+    });
+
+  } catch (error) {
+    console.error("Error loading messages:", error);
+    chatMessages.innerHTML = '<p class="error">Error loading messages.</p>';
+  }
+}
+
+async function searchAndLoadMessages(groupName) {
+  const groupData = await searchGroupByName(groupName);
+  if (!groupData || !groupData.id) {
+    console.warn("Group not found or missing ID.");
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.innerHTML = '<p class="no-messages">Group not found.</p>';
+    return;
+  }
+
+  const groupNameDisplay = document.getElementById('groupNameDisplay');
+  if (groupNameDisplay) {
+    groupNameDisplay.textContent = groupData.groupName || groupName;
+  }
+
+  await loadMessagesForGroup(groupData.id);
+}
+
+
 async function getGroupByUser() {
   if (!userID) {
       console.error("User not available");
@@ -57,8 +144,22 @@ async function getGroupByUser() {
                   );
                   li.classList.add('active');
 
-                  // TODO: load messages for this group here if needed
-              });
+                  li.addEventListener('click', () => {
+                    // Select the group visually
+                    document.querySelectorAll('.custom-group-item').forEach(item =>
+                      item.classList.remove('active')
+                    );
+                    li.classList.add('active');
+                  
+                    // Update the group name display
+                    const groupNameDisplay = document.getElementById('groupNameDisplay');
+                    groupNameDisplay.textContent = groupchat.groupName || 'Unnamed Group';
+                  
+                    // Load messages for this group
+                    loadMessagesForGroup(groupchat.id);
+                  });
+
+                });
 
               li.appendChild(groupNameDiv);
               li.appendChild(lastMessageDiv);
@@ -201,29 +302,6 @@ document.getElementById("editGroup").addEventListener("click", async () => {
 
 
 
-
-async function searchGroupByName(name) {
-  try {
-    const response = await fetch(`${apibase}/groupchat/${encodeURIComponent(name)}`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      console.log("Group API result:", result);
-      return result || null; 
-    } else {
-      console.warn("API responded with", response.status);
-      return null;
-    }
-  } catch (err) {
-    console.error("Error fetching group by name:", err);
-    return null;
-  }
-}
 
 
 
