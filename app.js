@@ -7,6 +7,7 @@ const middlewareToken=require("./middlewares/authMiddleware");
 const userController= require("./controllers/userController");
 const bookingController=require("./controllers/bookingController");
 const clinicController=require("./controllers/clinicController");
+const eventController=require("./controllers/eventsController");
 const app = express();
 const port = process.env.PORT || 3000;
 const path = require("path");
@@ -36,6 +37,14 @@ app.get("/staff/clinic-bookings", middlewareToken, clinicController.getBookingsF
 app.get("/staff/clinic-info", middlewareToken, clinicController.getClinicInfoForStaff);
 app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.cancelBooking);
 app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);
+
+// Events routes
+app.get("/events", eventController.getAllEvents);
+app.get("/events/:id", eventController.getEventById);
+app.post("/events", eventController.createEvent);
+app.put("/events/:id",  eventController.updateEvent);
+app.delete("/events/:id",  eventController.deleteEvent);
+
 app.listen(port, async () => {
   try {
     await sql.connect(require("./dbConfig"));
