@@ -6,42 +6,321 @@
   <title>SeniorCare Messaging</title>
   <link rel="stylesheet" href="style/layout.css">
   <link rel="stylesheet" type="text/css" href="style/popup.css">
-  <link rel="stylesheet" type="text/css" href="style/groupchat.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+
+  .right-links a {
+    color: #333333;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 60px);
+    background-color: #fcdede;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+  }
+
+  .sidebar a {
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+  }
+
+  .sidebar a:hover {
+    background-color: #f5b5b5;
+  }
+
+  .main-wrapper {
+    display: flex;
+    margin-left: 250px;
+    margin-top: 60px;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+  }
+
+  .group-sidebar {
+    width: 300px;
+    background-color: #fff;
+    border-right: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .group-search {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: white;
+  }
+
+  .group-list {
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  .custom-group-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .custom-group-item {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+    padding-right: 40px; /* to avoid overlap with options button */
+  }
+
+  .custom-group-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .custom-group-item.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .options-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 6px;
+    color: #333;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .options-btn:hover {
+    color: #000;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 35px;
+    right: 10px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    z-index: 100;
+    width: 100px;
+    user-select: none;
+  }
+
+  .dropdown-menu.hidden {
+    display: none;
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .chat-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .form-notification {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px;
+    background-color: #d4edda;
+    color: #155724;
+    font-weight: bold;
+    text-align: center;
+    border-top: 1px solid #c3e6cb;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 5;
+  }
+
+  .form-notification.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-top: 1px solid #f5c6cb;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* ----- CHAT AREA FIXED PART ----- */
+  .chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f1f1f1;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .chat-window {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* prevent whole chat window from scrolling */
+  }
+
+  #chat-topbar {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 16px;
+    flex-shrink: 0; /* keep topbar from shrinking */
+    font-size: 1.25rem;
+    font-weight: 600;
+    user-select: none;
+  }
+
+  .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px 16px;
+    background-color: #f9f9f9;
+  }
+
+  .message-input {
+    border-top: 1px solid #ccc;
+    padding: 10px 16px;
+    background-color: white;
+    flex-shrink: 0;
+  }
+
+  .input-group {
+    display: flex;
+  }
+
+  .form-control {
+    flex: 1;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+  .btn {
+    margin-left: 8px;
+    padding: 8px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+
+  .options-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  width: 100px;
+  display: none; /* hidden by default */
+  z-index: 1000;
+}
+
+.dropdown-menu.visible {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+</style>
+</head>
 <body>
-  <script src="script/layout.js"></script>
-  <script src="script/script.js"></script>
   <div class="main-wrapper" id="main-wrapper">
     <div class="group-sidebar">
       <div class="group-search">
-        <input class="form-control" type="text" placeholder="Search groups...">
-        <button class="btn btn-sm btn-outline-primary mt-2" onclick="showCreateGroupForm()">Create Group</button>
+        <input type="text" id="groupSearchInput" placeholder="Search groups..." />
       </div>
-      <ul class="custom-group-list" id="custom-group-list">
-        <li class="custom-group-item">
-          <div class="group-name"></div>
-          <div class="last-message"></div>
-        </li>  
-      </ul>    
-      </div>
+      <ul class="custom-group-list group-list" id="custom-group-list">
+        <!-- Group list items dynamically inserted here -->
+      </ul>
+      <button id="createGroupBtn" style="margin:10px;" onclick="showCreateGroupForm()">+ Create New Group</button>
     </div>
 
-    <div class="chat-area">
-      <div class="chat-window">
-        <div id="chat-topbar"></div>
-      </div>
-    
-      <div class="message-input">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Type a message...">
-          <button class="btn btn-primary">Send</button>
+    <div class="chat-content">
+      <div class="chat-area">
+        <div class="chat-window">
+          <div id="chat-topbar" style="position: relative;">
+            <span id="groupNameDisplay">Select a group</span>
+            <button id="chatOptionsBtn" class="options-btn hidden" aria-label="Options" title="Options">⋮</button>
+            <div id="chatDropdownMenu" class="dropdown-menu hidden">
+              <div class="dropdown-item" id="editGroup">Edit</div>
+              <div class="dropdown-item" id="deleteGroup">Delete</div>
+            </div>
+          </div>          
+          </div>          
+          <div class="chat-messages" id="chat-messages">
+            <!-- Messages will go here -->
+          </div>
+        </div>
+
+        <div class="message-input">
+          <div class="input-group">
+            <input type="text" class="form-control" id="messageInput" placeholder="Type a message..." disabled>
+            <button id="createGroupBtn" class="btn btn-primary">Send message</button>
+          </div>
         </div>
       </div>
     </div>
-    
-    
   </div>
+
   <script src="script/layout.js"></script>
   <script src="script/script.js"></script>
   <script src="script/groupchat.js"></script>

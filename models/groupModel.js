@@ -91,7 +91,7 @@ async function getGroupByName(Name) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "SELECT groupName,groupDesc,groupInterest FROM GroupChat WHERE groupName = @name";
+    const query = "SELECT groupID,groupName,groupDesc,groupInterest FROM GroupChat WHERE groupName = @name";
     const request = connection.request();
     request.input("name", Name );
     const result = await request.query(query);
@@ -176,17 +176,21 @@ async function getGroupByUserID(id){
 async function deleteGroup(id) {
   let connection;
   try {
-    connection = await sql.connect(dbConfig);
+    connection = await sql.connect(dbConfig);  
+
+    const request2 = connection.request();
+    const query2 = "delete from GroupMember where groupID = @id;";
+    request2.input("id", id);
+    const deleted = await request2.query(query2);
+
     const query = "DELETE FROM GroupChat WHERE groupID = @id";
     const request = connection.request();
     request.input("id", id);
     const result = await request.query(query);
 
-    if (result.rowsAffected[0] === 0) {
-      return null; 
+    if (result.rowsAffected[0] > 0 && deleted.rowsAffected[0] > 0) {
+      return "group deleted";
     }
-
-    return { message: "GroupChat deleted successfully" };
   } catch (error) {
     console.error("Database error:", error);
     throw error;
@@ -200,6 +204,7 @@ async function deleteGroup(id) {
     }
   }
 }
+
 
 module.exports = {
     getAllGroups,
