@@ -29,7 +29,7 @@ async function registerUser(req, res) {
       userId = await userModel.createOrganiser(req.body);
     }
 
-    const token = jwt.sign({ id: userId, role }, process.env.SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ id: userId,role }, process.env.SECRET_KEY, { expiresIn: "12h" });
 
     return res.status(201).json({
       message: `${role.charAt(0).toUpperCase() + role.slice(1)} account created successfully`,
@@ -64,7 +64,7 @@ async function login(req, res) {
   const token = jwt.sign(
   { id: user.userId, role: role.toLowerCase() },
   process.env.SECRET_KEY,
-  { expiresIn: "1h" }
+  { expiresIn: "12h" }
 );
 
     return res.status(200).json({

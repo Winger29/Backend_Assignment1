@@ -45,7 +45,7 @@ async function searchGroupByName(name) {
 
 async function searchAndLoadMessages(groupName) {
   const groupData = await searchGroupByName(groupName);
-  if (!groupData || !groupData.id) {
+  if (!groupData || !groupData.groupID) {
     console.warn("Group not found or missing ID.");
     const chatMessages = document.getElementById('chat-messages');
     chatMessages.innerHTML = '<p class="no-messages">Group not found.</p>';
@@ -57,15 +57,15 @@ async function searchAndLoadMessages(groupName) {
     groupNameDisplay.textContent = groupData.groupName || groupName;
   }
 
-  await loadMessagesForGroup(groupData.id);
+  await loadMessagesForGroup(groupData.groupID);
 }
 
-async function loadMessagesForGroup(groupId) {
+async function loadMessagesForGroup(groupID) {
   const chatMessages = document.getElementById('chat-messages');
   chatMessages.innerHTML = ""; // Clear previous messages
 
   try {
-    const response = await fetch(`${apibase}/messages/${groupId}`, {
+    const response = await fetch(`${apibase}/messages/${groupID}`, {
       method: 'GET',
       headers: {
         "Authorization": `Bearer ${token}`,
