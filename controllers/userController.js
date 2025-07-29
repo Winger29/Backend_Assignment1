@@ -66,7 +66,6 @@ async function login(req, res) {
   process.env.SECRET_KEY,
   { expiresIn: "12h" }
 );
-
     return res.status(200).json({
       message: `Welcome, ${user.fullName}`,
       userId: user.userId,

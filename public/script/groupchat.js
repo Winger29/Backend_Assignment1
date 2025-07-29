@@ -43,29 +43,21 @@ async function searchGroupByName(name) {
   }
 }
 
-async function searchAndLoadMessages(groupName) {
-  const groupData = await searchGroupByName(groupName);
-  if (!groupData || !groupData.groupID) {
-    console.warn("Group not found or missing ID.");
-    const chatMessages = document.getElementById('chat-messages');
-    chatMessages.innerHTML = '<p class="no-messages">Group not found.</p>';
-    return;
-  }
-
-  const groupNameDisplay = document.getElementById('groupNameDisplay');
-  if (groupNameDisplay) {
-    groupNameDisplay.textContent = groupData.groupName || groupName;
-  }
-
-  await loadMessagesForGroup(groupData.groupID);
-}
-
-async function loadMessagesForGroup(groupID) {
+async function loadMessagesForGroup(name) {
   const chatMessages = document.getElementById('chat-messages');
   chatMessages.innerHTML = ""; // Clear previous messages
 
+  const search = await searchGroupByName(name); // ✅ await the promise
+
+  if (!search || !search.groupID) {
+    console.error("Group not found or groupID is undefined");
+    return;
+  }
+
+  console.log("Group ID:", search.groupID); // should show 16 now
+
   try {
-    const response = await fetch(`${apibase}/messages/${groupID}`, {
+    const response = await fetch(`${apibase}/messages/${search.groupID}`, {
       method: 'GET',
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -73,7 +65,9 @@ async function loadMessagesForGroup(groupID) {
       }
     });
 
+
     if (!response.ok) {
+      console.log("Failed to fetch messages:", response.status);
       throw new Error("Failed to fetch messages");
     }
 
@@ -103,7 +97,6 @@ async function loadMessagesForGroup(groupID) {
     chatMessages.innerHTML = '<p class="error">Error loading messages.</p>';
   }
 }
-
 
 
 
@@ -147,7 +140,8 @@ async function getGroupByUser() {
                   li.classList.add('active');
                   
                     // Load messages for this group
-                    loadMessagesForGroup(groupchat.id);
+                    loadMessagesForGroup(groupchat.groupName);
+
                   });
 
               li.appendChild(groupNameDiv);
@@ -409,9 +403,6 @@ document.getElementById('deleteGroup').addEventListener('click', async () => {
 
   chatDropdownMenu.classList.remove('visible');
 });
-
-
-
 
   window.onload = () => {
     getGroupByUser();
