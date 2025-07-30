@@ -12,9 +12,10 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   
 </head>
+
 <body>
   <main>
-    <h1>Events</h1>
+    <h1>Create event</h1>
     <div id="eventsContainer">Loading events...</div>
   </main>
   <div class="popup hidden" id="updateProfilePopup">
@@ -59,7 +60,7 @@
   <div class="topbar">
         
         <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
-        <h1>SeniorCare Organiser Menu</h1>
+        <h1>SeniorCare Platform</h1>
         <div class="right-links">
             <a href="index.html">Home</a>
             <a href="about.html">AboutUs</a>
@@ -68,6 +69,7 @@
     </div>
     <div class="sidebar">
             <a href="create.html">Create event</a>
+            <a href="organiser.html">View all events</a>
             <a href="#" onclick="logout()">🚪 Logout</a>
     </div>
     <div class="overlay" id="overlay" onclick="closePopup()"></div>
@@ -81,8 +83,8 @@
     <div class="overlay" id="overlay" onclick="closePopup()"></div>
   
 
-  <script src="/script/event.js"></script>
   <script src="/script/script.js"></script>
+  <script src="/script/create.js"></script>
   <script>
     function logout() {
     localStorage.clear();

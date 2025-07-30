@@ -39,7 +39,7 @@ async function deleteEvent(id) {
   try {
     const res = await fetch(`/events/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Failed to delete event");
-    fetchEvents();
+    fetchEvents()
   } catch (err) {
     console.error("Delete error:", err);
     alert("Failed to delete event.");

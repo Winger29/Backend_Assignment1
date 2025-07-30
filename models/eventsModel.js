@@ -5,11 +5,26 @@ async function getAllEvents() {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "SELECT * FROM Events";
+    const query = `
+      SELECT 
+    e.eventId,
+    e.title,
+    e.organiserId,
+    o.fullName AS organiserName,
+    e.eventDate,
+    e.startTime,
+    e.endTime,
+    e.location
+FROM 
+    Events e
+LEFT JOIN 
+    Organisers o ON e.organiserId = o.organiserId
+
+    `;
     const result = await connection.request().query(query);
     return result.recordset;
   } catch (error) {
-    console.error("Database error:", error);
+    console.error("Database error (getAllEvents):", error);
     throw error;
   } finally {
     if (connection) {

@@ -1,16 +1,17 @@
 const express = require("express");
 const sql = require("mssql");
 const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config(); 
-const middlewareToken=require("./middlewares/authMiddleware");
+const middlewareToken = require("./middlewares/authMiddleware");
 const userController= require("./controllers/userController");
 const bookingController=require("./controllers/bookingController");
 const clinicController=require("./controllers/clinicController");
 const eventController=require("./controllers/eventsController");
 const app = express();
 const port = process.env.PORT || 3000;
-const path = require("path");
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -42,8 +43,9 @@ app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareT
 app.get("/events", eventController.getAllEvents);
 app.get("/events/:id", eventController.getEventById);
 app.post("/events", eventController.createEvent);
-app.put("/events/:id",  eventController.updateEvent);
-app.delete("/events/:id",  eventController.deleteEvent);
+app.put("/events/:id", middlewareToken,  eventController.updateEvent);
+app.delete("/events/:id", middlewareToken, eventController.deleteEvent);
+app.post("/events/signup", middlewareToken, eventController.signupForEvent);
 
 app.listen(port, async () => {
   try {
@@ -51,7 +53,7 @@ app.listen(port, async () => {
     console.log("Database connected successfully");
   } catch (err) {
     console.error("Database connection error:", err);
-    process.exit(1);
+    process.exit(1);  
   }
   console.log(`Server is running on port ${port}`);
 });
