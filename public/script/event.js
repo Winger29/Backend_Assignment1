@@ -18,11 +18,13 @@ async function fetchEvents() {
 
       div.innerHTML = `
         <h2>${event.title}</h2>
+        <p><strong>Organiser:</strong> ${event.organiserName || 'Unknown organiser'}, ${event.organiserId}</p>
         <p><strong>Date:</strong> ${formatDate(event.eventDate)}</p>
         <p><strong>Time:</strong> ${event.startTime} – ${event.endTime}</p>
         <p><strong>Location:</strong> ${event.location}</p>
         <button onclick="deleteEvent(${event.eventId})">Delete</button>
         <button onclick='showEditForm(${JSON.stringify(event)})'>Edit</button>
+        <button onclick="viewSignups(${event.eventId})">View Signups</button>
       `;
 
       container.appendChild(div);
@@ -138,4 +140,89 @@ function formatDate(dateStr) {
     month: "long",
     year: "numeric"
   });
+}
+
+async function viewSignups(eventId) {
+  try {
+    const response = await fetch(`/events/${eventId}/signups`);
+    if (!response.ok) throw new Error("Failed to fetch signups");
+
+    const data = await response.json();
+    showSignupsPopup(data);
+  } catch (err) {
+    console.error("Error fetching signups:", err);
+    alert("Failed to load signups.");
+  }
+}
+
+function showSignupsPopup(data) {
+  // Create popup container
+  const popup = document.createElement("div");
+  popup.className = "popup";
+  popup.id = "signupsPopup";
+  popup.style.display = "block";
+  
+  // Create popup content
+  let content = `
+    <span class="close-btn" onclick="closeSignupsPopup()">×</span>
+    <h2>Event Signups</h2>
+    <p><strong>Total Attendees:</strong> ${data.totalAttendees}</p>
+  `;
+  
+  if (data.signups && data.signups.length > 0) {
+    content += `
+      <div class="signups-list">
+        <h3>Attendees:</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Senior ID</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    
+    data.signups.forEach(signup => {
+      content += `
+        <tr>
+          <td>${signup.seniorid}</td>
+          <td>${signup.fullName}</td>
+        </tr>
+      `;
+    });
+    
+    content += `
+          </tbody>
+        </table>
+      </div>
+    `;
+  } else {
+    content += '<p>No signups yet for this event.</p>';
+  }
+  
+  popup.innerHTML = content;
+  
+  // Add overlay
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.id = "signupsOverlay";
+  overlay.style.display = "block";
+  overlay.onclick = closeSignupsPopup;
+  
+  // Add to page
+  document.body.appendChild(overlay);
+  document.body.appendChild(popup);
+}
+
+function closeSignupsPopup() {
+  const popup = document.getElementById("signupsPopup");
+  const overlay = document.getElementById("signupsOverlay");
+  
+  if (popup) {
+    popup.remove();
+  }
+  if (overlay) {
+    overlay.remove();
+  }
 }

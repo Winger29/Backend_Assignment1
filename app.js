@@ -46,6 +46,7 @@ app.post("/events", eventController.createEvent);
 app.put("/events/:id", middlewareToken,  eventController.updateEvent);
 app.delete("/events/:id", middlewareToken, eventController.deleteEvent);
 app.post("/events/signup", middlewareToken, eventController.signupForEvent);
+app.get("/events/:eventId/signups", eventController.getEventSignups);
 
 app.listen(port, async () => {
   try {

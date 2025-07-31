@@ -50,7 +50,30 @@ async function addSignup(seniorId, eventId) {
   }
 }
 
+async function getEventSignups(eventId) {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .input("eventId", sql.Int, eventId)
+      .query(`
+        SELECT 
+          es.seniorid,
+          s.fullName
+        FROM eventSignups es
+        JOIN Seniors s ON es.seniorid = s.seniorId
+        WHERE es.eventid = @eventId
+        ORDER BY s.fullName
+      `);
+    return result.recordset;
+  } catch (error) {
+    console.error("Model error in getEventSignups:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   getSignup,
   addSignup,
+  getEventSignups,
 };

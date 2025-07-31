@@ -89,6 +89,21 @@ async function signupForEvent(req, res) {
   }
 }
 
+async function getEventSignups(req, res) {
+  const eventId = parseInt(req.params.eventId);
+  
+  try {
+    const signups = await signupModel.getEventSignups(eventId);
+    res.status(200).json({
+      eventId: eventId,
+      totalAttendees: signups.length,
+      signups: signups
+    });
+  } catch (error) {
+    console.error("Error fetching event signups:", error);
+    res.status(500).json({ error: "Failed to fetch event signups" });
+  }
+}
 
 module.exports = {
   getAllEvents,
@@ -97,4 +112,5 @@ module.exports = {
   updateEvent,
   deleteEvent,
   signupForEvent,
+  getEventSignups,
 };

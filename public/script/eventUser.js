@@ -68,3 +68,4 @@ async function signUpForEvent(eventId) {
     alert(error.message || "Error signing up");
   }
 }
+         
