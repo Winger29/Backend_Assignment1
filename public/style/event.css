@@ -10,3 +10,123 @@ body {
   border-radius: 8px;
   background-color: #f9f9f9;
 }
+
+/* Navigation buttons styling */
+.event-navigation {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.nav-btn {
+  padding: 12px 24px;
+  border: 2px solid #e46f39;
+  background-color: white;
+  color: #e46f39;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background-color: #e46f39;
+  color: white;
+}
+
+.nav-btn.active {
+  background-color: #e46f39;
+  color: white;
+}
+
+/* Search section styling */
+.search-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-section input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  min-width: 300px;
+}
+
+.search-section button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.search-section button:hover {
+  background-color: #218838;
+}
+
+/* Main content styling */
+main {
+  margin-top: 80px;
+  padding: 20px;
+}
+
+main h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Event cards improvements */
+.event-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.event-card h3 {
+  color: #e46f39;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.event-card button {
+  background-color: #e46f39;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.event-card button:hover {
+  background-color: #e46f39;
+}
+
+.event-card a {
+  color: #e46f39;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.event-card a:hover {
+  text-decoration: underline;
+}

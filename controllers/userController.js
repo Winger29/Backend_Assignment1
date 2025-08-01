@@ -102,7 +102,7 @@ async function getProfile(req, res) {
   }
 }
 
-// === UPDATE SENIOR ===
+
 async function updateProfile(req, res) {
   try {
     const { role, id } = req.user;

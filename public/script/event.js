@@ -156,13 +156,13 @@ async function viewSignups(eventId) {
 }
 
 function showSignupsPopup(data) {
-  // Create popup container
+  
   const popup = document.createElement("div");
   popup.className = "popup";
   popup.id = "signupsPopup";
   popup.style.display = "block";
   
-  // Create popup content
+  
   let content = `
     <span class="close-btn" onclick="closeSignupsPopup()">×</span>
     <h2>Event Signups</h2>
@@ -203,14 +203,14 @@ function showSignupsPopup(data) {
   
   popup.innerHTML = content;
   
-  // Add overlay
+  
   const overlay = document.createElement("div");
   overlay.className = "overlay";
   overlay.id = "signupsOverlay";
   overlay.style.display = "block";
   overlay.onclick = closeSignupsPopup;
   
-  // Add to page
+  
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
 }

@@ -20,7 +20,7 @@ function displayEvents(events) {
   container.innerHTML = "";
 
   events.forEach(event => {
-    // Format the event date as "DD MMM YYYY"
+
     const dateObj = new Date(event.eventDate);
     const formattedDate = dateObj.toLocaleDateString(undefined, {
       day: "2-digit",

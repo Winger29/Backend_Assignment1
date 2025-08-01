@@ -76,8 +76,8 @@ async function createEvent(eventData) {
     request.input("organiserId", sql.VarChar(10), organiserId);
     request.input("title", sql.VarChar(100), title);
     request.input("eventDate", sql.Date, eventDate);
-    request.input("startTime", sql.VarChar(8), startTime);  // changed from sql.Time
-    request.input("endTime", sql.VarChar(8), endTime);      // changed from sql.Time
+    request.input("startTime", sql.VarChar(8), startTime);  
+    request.input("endTime", sql.VarChar(8), endTime);      
     request.input("location", sql.VarChar(100), location);
 
     const result = await request.query(query);
@@ -119,8 +119,8 @@ async function updateEvent(id, eventData) {
     request.input("organiserId", sql.VarChar(10), organiserId);
     request.input("title", sql.VarChar(100), title);
     request.input("eventDate", sql.Date, eventDate);
-    request.input("startTime", sql.VarChar(8), startTime);  // changed from sql.Time
-    request.input("endTime", sql.VarChar(8), endTime);      // changed from sql.Time
+    request.input("startTime", sql.VarChar(8), startTime);  
+    request.input("endTime", sql.VarChar(8), endTime);      
     request.input("location", sql.VarChar(100), location);
 
     const result = await request.query(query);

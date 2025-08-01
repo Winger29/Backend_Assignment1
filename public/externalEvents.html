@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="style/layout.css">
+  <link rel="stylesheet" href="/style/popup.css" />
+  <link rel="stylesheet" href="/style/event.css" />
+  <title>External Events</title>
+</head>
+<body>
+  <main>
+    <h1>External Events</h1>
+    
+    
+    <div class="event-navigation">
+      <button class="nav-btn" onclick="window.location.href='eventUser.html'">Local Events</button>
+      <button class="nav-btn active" onclick="window.location.href='externalEvents.html'">External Events</button>
+    </div>
+    
+    <div class="search-section">
+      <input type="text" id="eventSearchInput" placeholder="Search for events...">
+      <button onclick="searchEvents()">Search</button>
+    </div>
+
+    <div id="eventResults"></div>
+  </main>
+
+  
+  <script src="script/layout.js"></script>
+  <script src="script/externalApi.js"></script>
+  <script src="script/script.js"></script>
+
+</body>
+</html>  
+
+
+
+

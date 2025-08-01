@@ -41,19 +41,19 @@
     <button id="openBookingBtn">📝 Book an Appointment Now</button>
     </div>
     
-<!-- My Bookings Section -->
+
 <div id="myBookings" class="tab-content" style="display: none;">
     <h2>📋 My Bookings</h2>
     <div id="myBookingCards" class="booking-cards"></div>
   </div>
   <div id="bookingHistory" class="tab-content" style="display: none;">
   <h2>📜 Booking History</h2>
-  <div id="bookingHistoryCards" class="booking-cards"></div> <!-- this ID must match -->
+  <div id="bookingHistoryCards" class="booking-cards"></div> 
 </div>
 </main>
 
 
-<!--Update Time Slot-->
+
 <div id="editBookingPopup" style="display:none;" class="popup">
   <span class="close-btn" onclick="closeEditPopup()">×</span>
   <h3>Update Time Slot</h3>
@@ -66,50 +66,50 @@
 </div>
 
 <div id="overlay" class="overlay" onclick="closeBookingPopup()"></div>
-<!-- Booking Popup -->
+
 <div id="bookingPopup" class="popup" style="display: none; z-index: 1000;">
   <div class="popup-content">
     <span class="close-btn" onclick="closeBookingPopup()">×</span>
     <h2>Book an Appointment</h2>
     <form id="bookingForm">
       
-      <!-- Clinic Selection -->
+      
       <label for="bookingClinic">Clinic:</label>
       <select id="clinicSearch" required>
         <option value="">-- Select Clinic --</option>
       </select>
 
-      <!-- Doctor Selection -->
+      
       <label for="bookingDoctor">Doctor:</label>
       <select id="doctorSelect" required>
         <option value="">-- Select Doctor --</option>
       </select>
 
-      <!-- Booking Date -->
+      
       <label for="bookingDate">Date:</label>
       <input type="date" id="bookingDate" required />
 
-      <!-- Time Slot -->
+      
       <label for="bookingSlot">Time:</label>
       <select id="timeSlot" required>
         <option value="">-- Select Time --</option>
       </select>
 
-      <!-- Phone Number -->
+      
       <label for="bookingPhone">Phone:</label>
       <input type="tel" id="phone" required placeholder="e.g. 91234567" pattern="[0-9]{8}" />
 
-      <!-- Booking Type -->
+      
       <label for="bookingType">Purpose:</label>
       <input type="text" id="reason" required placeholder="e.g. Consultation" />
 
-      <!-- Submit -->
+      
       <button type="submit">Confirm Booking</button>
     </form>
   </div>
 </div>
 
-    <!-- Load layout script -->
+    
     <script src="script/layout.js"></script>
     <script src="script/script.js"></script>
     <script src="script/booking.js"></script>

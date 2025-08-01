@@ -24,7 +24,7 @@ app.get("/profile", middlewareToken,userController.getProfile);
 app.put("/profile", middlewareToken, userController.updateProfile);
 app.delete("/profile", middlewareToken, userController.deleteProfile);
 
-// Booking routes
+
 app.get("/clinics", bookingController.getAllClinics);
 app.get("/doctors", bookingController.getDoctorsByClinicId);
 app.get("/availability", bookingController.getAvailableSlots);
@@ -33,13 +33,13 @@ app.get("/my-bookings",middlewareToken,bookingController.getMyBookings);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq", middlewareToken, bookingController.cancelBooking);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, bookingController.updateBookingTime);
 
-//Staff management for Booking
+
 app.get("/staff/clinic-bookings", middlewareToken, clinicController.getBookingsForStaff);
 app.get("/staff/clinic-info", middlewareToken, clinicController.getClinicInfoForStaff);
 app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.cancelBooking);
 app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);
 
-// Events routes
+
 app.get("/events", eventController.getAllEvents);
 app.get("/events/:id", eventController.getEventById);
 app.post("/events", eventController.createEvent);
@@ -47,6 +47,10 @@ app.put("/events/:id", middlewareToken,  eventController.updateEvent);
 app.delete("/events/:id", middlewareToken, eventController.deleteEvent);
 app.post("/events/signup", middlewareToken, eventController.signupForEvent);
 app.get("/events/:eventId/signups", eventController.getEventSignups);
+
+
+const externalApiController = require("./controllers/externalApiController");
+app.get("/api/external-events",middlewareToken, externalApiController.getFormattedEvents);
 
 app.listen(port, async () => {
   try {
@@ -59,7 +63,7 @@ app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// Graceful shutdown on Ctrl+C
+
 process.on("SIGINT", async () => {
   console.log("Shutting down server...");
   await sql.close();
