@@ -2,12 +2,14 @@ const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
 // get all groups (test if api works) 
-async function getAllGroups() {
+async function getAllGroups(id) {
     let connection;
     try {
         connection = await sql.connect(dbConfig);
-        const query = "select groupName,groupDesc,groupInterest from GroupChat";
-        const result = await connection.request().query(query);
+        const query = "SELECT groupID, groupName, groupDesc, groupInterest FROM GroupChat WHERE NOT EXISTS (SELECT * FROM GroupMember WHERE GroupMember.groupID = GroupChat.groupID AND GroupMember.userID = @userid);";
+        const request = connection.request();
+        request.input("userid", id);
+        const result = await request.query(query);
         return result.recordset;
       } catch (error) {
         console.error("Database error:", error);
@@ -45,6 +47,35 @@ async function createGroup(groupData, userID) {
     const memberRes = await request2.query(query2);
     if (result.rowsAffected[0] > 0 && memberRes.rowsAffected[0] > 0) {
       return await getGroupByID(groupID)};
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
+async function createMember(memberData, groupID) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const request = connection.request();
+    const query ="insert into GroupMember (groupID, userID, roles) values (@gID, @uID, @role);"
+    request.input("gID",groupID);
+    request.input("uID",memberData.userID);
+    request.input("role","member");
+    const memberRes = await request.query(query);
+    if (memberRes.rowsAffected[0] > 0) {
+      return "Group member created successfully"; 
+    } else {
+      throw new Error("Failed to create group member");
+    }
   } catch (error) {
     console.error("Database error:", error);
     throw error;
@@ -210,6 +241,7 @@ module.exports = {
     getAllGroups,
     getGroupByID,
     getGroupByName,
+    createMember,
     updateGroupByID,
     deleteGroup,
     getGroupByUserID,

@@ -3,11 +3,15 @@ const groupModel = require("../models/groupModel");
 // get all books (api test) 
 async function getAllGroups(req,res) {
     try {
-        const books = await groupModel.getAllGroups();
-        res.json(books);
+      const userId = req.user.id;
+      if (!userId) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+        const groups = await groupModel.getAllGroups(userId);
+        res.json(groups);
       } catch (error) {
         console.error("Controller error:", error);
-        res.status(500).json({ error: "Error retrieving books" });
+        res.status(500).json({ error: "Error retrieving groups" });
       }
 }
 
@@ -22,6 +26,20 @@ async function createGroup(req,res){
   } catch (error) {
     console.error("Controller error:", error);
     res.status(500).json({ error: "Error creating group"});
+  }
+}
+
+async function createMember(req,res){
+  try {
+    const userId = req.user.id;
+    if (!userId) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+    const newGroup = await groupModel.createGroup(req.body,userId);
+    res.status(201).json(newGroup);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error creating member"});
   }
 }
 
@@ -106,5 +124,6 @@ module.exports = {
     deleteGroup,
     getGroupByUser,
     getGroupByName,
-    createGroup
+    createGroup,
+    createMember
 }

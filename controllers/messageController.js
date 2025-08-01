@@ -19,6 +19,17 @@ async function getMsgBygID(req,res) {
   }
 }
 
+async function createMessage(req, res) {
+try {
+    const newMessage = await msgModel.createMessage(req.body);
+    res.status(201).json(newMessage);
+} catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error creating message"});
+}
+}
+
 module.exports = {
-  getMsgBygID
+  getMsgBygID,
+  createMessage
 };

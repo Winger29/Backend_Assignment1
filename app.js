@@ -54,29 +54,38 @@ app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareTo
 app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);
 
 // Group Chat
-const authenticateToken = require("./middleware/jwtTransfer");
-app.post("/groupchat", authenticateToken.authenticateToken, groupController.createGroup);
-app.get("/groupchat", groupController.getAllGroups);
-app.get("/usergroupchat", authenticateToken.authenticateToken, groupController.getGroupByUser);
+app.post("/groupchat", middlewareToken, groupController.createGroup);
+app.get("/groupchat",groupController.getAllGroups);
+app.get("/usergroupchat", middlewareToken, groupController.getGroupByUser);
 app.get("/groupchat/:name", groupController.getGroupByName);
 app.put("/groupchat/:id", groupController.updateGroup);
 app.delete("/groupchat/:id", groupController.deleteGroup);
 
 // grp chat messages 
+app.post("/messages", msgController.createMessage);
+app.post("/member", groupController.createMember);
 app.get("/messages/:groupID" , msgController.getMsgBygID);
 
-// ────── Socket.IO Setup ──────
+// app.post("/messages");
+
+// --- SOCKET.IO SETUP ---
 io.on('connection', (socket) => {
   console.log('Socket connected:', socket.id);
 
   socket.on('joinGroup', (groupId) => {
-    socket.join(`group_${groupId}`);
+    const room = `group_${groupId}`;
+    socket.join(room);
+    console.log(`Socket ${socket.id} joined room ${room}`);
   });
 
-  socket.on('sendMessage', async ({ groupId, userId, message }) => {
-    const msgTime = new Date();
+  socket.on('sendMessage', ({ room, message }) => {
+    io.to(room).emit('receiveMessage', message);
+  });
 
-    io.to(`group_${groupId}`).emit('newMessage', {
+  socket.on('sendMessageToGroup', ({ groupId, userId, message }) => {
+    const msgTime = new Date();
+    const room = `group_${groupId}`;
+    io.to(room).emit('newMessage', {
       groupId,
       userId,
       message,
@@ -84,12 +93,25 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('chatMessage', (data) => {
+    const room = `group_${data.groupid}`;
+    // Broadcast the message to others in the group room
+    socket.to(room).emit('newMessage', {
+      groupId: data.groupid,
+      userId: data.senderid,
+      sender: data.sender,
+      message: data.content,
+      msgTime: data.timestamp
+    });
+  });
+  
+
   socket.on('disconnect', () => {
     console.log('Socket disconnected:', socket.id);
   });
 });
 
-// ────── Start Server ──────
+// --- START SERVER ---
 server.listen(port, async () => {
   try {
     await sql.connect(require("./dbConfig"));

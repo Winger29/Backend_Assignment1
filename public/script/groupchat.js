@@ -4,12 +4,15 @@ const grouplist = document.getElementById("custom-group-list");
 const mainwrapper = document.getElementById("main-wrapper");
 const chatOptionsBtn = document.getElementById('chatOptionsBtn');
 const chatDropdownMenu = document.getElementById('chatDropdownMenu');
+const socket = io('http://localhost:3000');
 let userID = "";
+let userName = ""; 
 
 if (token) {
     try{ 
         const split = JSON.parse(atob(token.split('.')[1]));
         userID = split.id;
+        userName = split.Name || split.name;
         } catch(e) {
             console.error("Invalid token, check if its correct")
         }
@@ -18,7 +21,20 @@ else {
     console.log("No token found")
 }
 
+socket.on('newMessage', (data) => {
+  if (data.senderid === userID) return; // Don't show your own message again
 
+  const chatMessages = document.getElementById('chat-messages');
+  const msgDiv = document.createElement('div');
+  msgDiv.classList.add('chat-message', 'received');
+  msgDiv.innerHTML = `
+    <div class="message-user">User ${data.sender}</div>
+    <div class="message-text">${data.message}</div>
+    <div class="message-time">${new Date(data.msgTime).toLocaleTimeString()}</div>
+  `;
+  chatMessages.appendChild(msgDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
 
 async function searchGroupByName(name) {
   try {
@@ -45,16 +61,16 @@ async function searchGroupByName(name) {
 
 async function loadMessagesForGroup(name) {
   const chatMessages = document.getElementById('chat-messages');
-  chatMessages.innerHTML = ""; // Clear previous messages
+  chatMessages.innerHTML = ""; 
 
-  const search = await searchGroupByName(name); // ✅ await the promise
+  const search = await searchGroupByName(name); 
 
   if (!search || !search.groupID) {
     console.error("Group not found or groupID is undefined");
     return;
   }
 
-  console.log("Group ID:", search.groupID); // should show 16 now
+  console.log("Group ID:", search.groupID); 
 
   try {
     const response = await fetch(`${apibase}/messages/${search.groupID}`, {
@@ -73,30 +89,90 @@ async function loadMessagesForGroup(name) {
 
     const messages = await response.json();
 
+    const latest = messages[messages.length - 1]?.message || 'No messages yet.';
+
+
     if (!messages || messages.length === 0) {
       chatMessages.innerHTML = '<p class="no-messages">No messages in this group yet.</p>';
       return;
     }
-
     messages.forEach(msg => {
       const msgDiv = document.createElement('div');
-      msgDiv.className = 'chat-message';
-
-      // You can customize the markup as needed
-      msgDiv.innerHTML = `
-        <div class="message-user">${msg.fullName}</div>
-        <div class="message-text">${msg.message}</div>
-        <div class="message-time">${new Date(msg.msgtime).toLocaleString()}</div>
-      `;
-
+      const isSentByUser = String(msg.seniorId) === String(userID);
+      msgDiv.className = `chat-message ${isSentByUser ? 'sent' : 'received'}`;
+    
+      // Username (You or fullName)
+      const userDiv = document.createElement('div');
+      userDiv.className = 'message-user';
+      userDiv.textContent = isSentByUser ? 'You' : msg.fullName;
+      msgDiv.appendChild(userDiv);
+    
+      // Message content
+      const textDiv = document.createElement('div');
+      textDiv.className = 'message-text';
+      textDiv.textContent = msg.message;
+      msgDiv.appendChild(textDiv);
+    
+      // Time
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'message-time';
+      timeDiv.textContent = new Date(msg.msgtime).toLocaleString();
+      msgDiv.appendChild(timeDiv);
+    
+      // Dropdown menu (only for user's own message)
+      if (isSentByUser) {
+        const optionsBtn = document.createElement('button');
+        optionsBtn.className = 'options-button';
+        optionsBtn.innerHTML = '⋮'; // 3-dot vertical menu
+        msgDiv.appendChild(optionsBtn);
+    
+        const menu = document.createElement('div');
+        menu.className = 'options-menu hidden'; // initially hidden
+    
+        const editOption = document.createElement('div');
+        editOption.className = 'options-item';
+        editOption.textContent = 'Edit';
+        editOption.onclick = () => {
+          console.log(`Edit clicked for message ID: ${msg.messageId}`);
+          // Add your edit logic here
+        };
+    
+        const deleteOption = document.createElement('div');
+        deleteOption.className = 'options-item';
+        deleteOption.textContent = 'Delete';
+        deleteOption.onclick = () => {
+          console.log(`Delete clicked for message ID: ${msg.messageId}`);
+          // Add your delete logic here
+        };
+    
+        menu.appendChild(editOption);
+        menu.appendChild(deleteOption);
+        msgDiv.appendChild(menu);
+    
+        optionsBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menu.classList.toggle('hidden');
+        });
+      }
+    
       chatMessages.appendChild(msgDiv);
     });
+    
+    
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 
   } catch (error) {
     console.error("Error loading messages:", error);
     chatMessages.innerHTML = '<p class="error">Error loading messages.</p>';
   }
 }
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.options-menu').forEach(menu => {
+    menu.classList.add('hidden');
+  });
+});
 
 
 
@@ -132,17 +208,29 @@ async function getGroupByUser() {
               lastMessageDiv.textContent = groupchat.lastMessage || 'No messages yet.';
 
               // Click on li (group item)
-              li.addEventListener('click', () => {
-                  // Select the group
-                  document.querySelectorAll('.custom-group-item').forEach(item =>
-                      item.classList.remove('active')
-                  );
-                  li.classList.add('active');
-                  
-                    // Load messages for this group
-                    loadMessagesForGroup(groupchat.groupName);
-
-                  });
+              li.addEventListener('click', async () => {
+                document.querySelectorAll('.custom-group-item').forEach(item =>
+                    item.classList.remove('active')
+                );
+                li.classList.add('active');
+            
+                const roomName = groupchat.groupName;
+            
+                // Get group ID to join the correct room
+                const group = await searchGroupByName(roomName);
+                if (!group || !group.groupID) {
+                    console.error("Invalid group or missing ID.");
+                    return;
+                }
+            
+                const roomID = `group_${group.groupID}`;
+                socket.emit('joinGroup', group.groupID);
+                console.log(`Joining room: ${roomID}`);
+            
+                // Load messages
+                loadMessagesForGroup(roomName);
+            });
+            
 
               li.appendChild(groupNameDiv);
               li.appendChild(lastMessageDiv);
@@ -156,8 +244,7 @@ async function getGroupByUser() {
   }
 }
 
-
-
+// function that shows the create group form 
 function showCreateGroupForm() {
     const restorepoint = mainwrapper.innerHTML;
 
@@ -258,15 +345,18 @@ document.getElementById('custom-group-list').addEventListener('click', (e) => {
 
 chatOptionsBtn.addEventListener('click', (e) => {
   e.stopPropagation();
-  chatDropdownMenu.classList.toggle('visible');
+  console.log("Chat options button clicked");
+  chatDropdownMenu.classList.remove('hidden'); // Remove hidden class
+  chatDropdownMenu.classList.toggle('visible'); // Toggle visibility
 });
+
 
 // Close dropdown on outside click
 document.addEventListener('click', () => {
   chatDropdownMenu.classList.remove('visible');
 });
 
-// Edit / Delete handlers
+// Edit group
 document.getElementById("editGroup").addEventListener("click", async () => {
   const groupName = document.getElementById("groupNameDisplay")?.textContent?.trim();
   if (!groupName || groupName === "Select a group") {
@@ -287,7 +377,7 @@ document.getElementById("editGroup").addEventListener("click", async () => {
 
 
 
-
+// function to show the editing form 
 function showEditGroupForm(group) {
   const restorepoint = mainwrapper.innerHTML;
 
@@ -364,6 +454,8 @@ function showEditGroupForm(group) {
 }
 
 
+
+// deletion of group 
 document.getElementById('deleteGroup').addEventListener('click', async () => {
   const groupName = document.getElementById("groupNameDisplay")?.textContent?.trim();
   if (!groupName || groupName === "Select a group") {
@@ -404,7 +496,92 @@ document.getElementById('deleteGroup').addEventListener('click', async () => {
   chatDropdownMenu.classList.remove('visible');
 });
 
-  window.onload = () => {
-    getGroupByUser();
+
+
+// Function to create a new message
+async function createMessage(name) {
+  const input = document.getElementById('messageInput');
+  const messageText = input.value.trim();
+  const groupName = document.getElementById('groupNameDisplay')?.textContent?.trim();
+  const group = await searchGroupByName(name);
+  socket.emit('joinGroup', group.groupID);
+  if (!messageText || !groupName || groupName === "Select a group") {
+    console.warn("Missing message or group selection.");
+    return;
+  }
+
+  const messageData = {
+    groupid: group.groupID,
+    senderid: userID,
+    sender: userName,
+    content: messageText,
+    timestamp: new Date().toISOString()
   };
+  console.log("Creating message:", messageData);
+  // Emit to socket.io
+  socket.emit('chatMessage', messageData);
+  console.log("Sent message:", messageData);
+
+  const chatMessages = document.getElementById('chat-messages');
+  const msgDiv = document.createElement('div');
+  msgDiv.classList.add('chat-message', 'sent'); // add the new 'sent' class
+  msgDiv.innerHTML = `
+    <div class="message-user">You</div>
+    <div class="message-text">${messageText}</div>
+    <div class="message-time">${new Date(messageData.timestamp).toLocaleTimeString()}</div>
+  `;
+  chatMessages.appendChild(msgDiv);
+
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  const groupItems = document.querySelectorAll('.custom-group-item');
+  groupItems.forEach(item => {
+    const name = item.querySelector('.group-name')?.textContent?.trim();
+    if (name === groupName) {
+      const lastMsg = item.querySelector('.last-message');
+      if (lastMsg) {
+        lastMsg.textContent = messageText;
+      }
+    }
+  });
+
+  // send message to the db 
+  try{
+    const response = await fetch(`${apibase}/messages`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(messageData),
+  });
+    if (!response.ok) {
+      console.error("Failed to send message:", response.status);
+      return;
+    }
+  } catch (err) {
+    console.error("Error sending message:", err);
+  }
+  // Clear input
+  input.value = '';
+}
+
+
+
+
+
+document.getElementById('sendMessageBtn').addEventListener('click', () => {
+  const groupName = document.getElementById('groupNameDisplay')?.textContent?.trim();
+  createMessage(groupName);
+});
+
+
+
+
+
+
+
+window.onload = () => {
+    getGroupByUser();
+};
   
