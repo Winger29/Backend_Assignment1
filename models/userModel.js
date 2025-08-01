@@ -1,6 +1,5 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
-const jwt=require("jsonwebtoken");
 require("dotenv").config();
 
 async function createSenior(senior){
