@@ -68,7 +68,7 @@ async function deleteMessage(id) {
     connection = await sql.connect(dbConfig);
     const query = "DELETE FROM groupmessages WHERE msgid = @msgId";
     const request = connection.request();
-    request.input("msgId", id);
+    request.input("msgID", id);
     await request.query(query);
     return { success: true, message: "Message deleted successfully" };
   } catch (error) {

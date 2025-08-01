@@ -21,20 +21,76 @@ else {
     console.log("No token found")
 }
 
-socket.on('newMessage', (data) => {
-  if (data.senderid === userID) return; // Don't show your own message again
 
+// Function to handle incoming messages for real time 
+socket.on('newMessage', (data) => {
   const chatMessages = document.getElementById('chat-messages');
+
+  const isSentByUser = String(data.userId) === String(userID);
+
   const msgDiv = document.createElement('div');
-  msgDiv.classList.add('chat-message', 'received');
-  msgDiv.innerHTML = `
-    <div class="message-user">User ${data.sender}</div>
-    <div class="message-text">${data.message}</div>
-    <div class="message-time">${new Date(data.msgTime).toLocaleTimeString()}</div>
-  `;
+  msgDiv.classList.add('chat-message', isSentByUser ? 'sent' : 'received');
+
+  const userDiv = document.createElement('div');
+  userDiv.className = 'message-user';
+  userDiv.textContent = isSentByUser ? 'You' : data.sender;
+  msgDiv.appendChild(userDiv);
+
+  const textDiv = document.createElement('div');
+  textDiv.className = 'message-text';
+  textDiv.textContent = data.message;
+  msgDiv.appendChild(textDiv);
+
+  const timeDiv = document.createElement('div');
+  timeDiv.className = 'message-time';
+  timeDiv.textContent = new Date(data.msgTime || data.timestamp).toLocaleTimeString();
+  msgDiv.appendChild(timeDiv);
+
+  if (isSentByUser) {
+    const optionsBtn = document.createElement('button');
+    optionsBtn.className = 'options-button';
+    optionsBtn.textContent = '⋮'; 
+
+    const menu = document.createElement('div');
+    menu.className = 'options-menu hidden';
+
+    const editOption = document.createElement('div');
+    editOption.className = 'options-item';
+    editOption.textContent = 'Edit';
+    editOption.onclick = () => {
+      console.log(`Edit clicked for message ID: ${data.messageId || '(no id)'}`);
+    };
+
+    const deleteOption = document.createElement('div');
+    deleteOption.className = 'options-item';
+    deleteOption.textContent = 'Delete';
+    deleteOption.onclick = () => {
+      console.log(`Delete clicked for message ID: ${data.messageId || '(no id)'}`);
+    };
+
+    menu.appendChild(editOption);
+    menu.appendChild(deleteOption);
+
+    optionsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
+    });
+
+    msgDiv.appendChild(optionsBtn);
+    msgDiv.appendChild(menu);
+
+    // Close menu if clicking outside
+    document.addEventListener('click', () => {
+      if (!menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+    });
+  }
+
   chatMessages.appendChild(msgDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
+
 
 async function searchGroupByName(name) {
   try {
@@ -334,11 +390,10 @@ document.getElementById('custom-group-list').addEventListener('click', (e) => {
   const groupName = item.querySelector('.group-name')?.textContent.trim() || 'Unnamed group';
   console.log('Clicked group name:', groupName);
 
-  // Update group name display
   const nameDisplay = document.getElementById('groupNameDisplay');
   nameDisplay.textContent = groupName;
 
-  // Show the 3-dot options button
+
   const optionsBtn = document.getElementById('chatOptionsBtn');
   optionsBtn.classList.remove('hidden');
 });
@@ -346,17 +401,15 @@ document.getElementById('custom-group-list').addEventListener('click', (e) => {
 chatOptionsBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   console.log("Chat options button clicked");
-  chatDropdownMenu.classList.remove('hidden'); // Remove hidden class
-  chatDropdownMenu.classList.toggle('visible'); // Toggle visibility
+  chatDropdownMenu.classList.remove('hidden'); 
+  chatDropdownMenu.classList.toggle('visible'); 
 });
 
 
-// Close dropdown on outside click
 document.addEventListener('click', () => {
   chatDropdownMenu.classList.remove('visible');
 });
 
-// Edit group
 document.getElementById("editGroup").addEventListener("click", async () => {
   const groupName = document.getElementById("groupNameDisplay")?.textContent?.trim();
   if (!groupName || groupName === "Select a group") {
@@ -524,13 +577,68 @@ async function createMessage(name) {
 
   const chatMessages = document.getElementById('chat-messages');
   const msgDiv = document.createElement('div');
-  msgDiv.classList.add('chat-message', 'sent'); // add the new 'sent' class
-  msgDiv.innerHTML = `
-    <div class="message-user">You</div>
-    <div class="message-text">${messageText}</div>
-    <div class="message-time">${new Date(messageData.timestamp).toLocaleTimeString()}</div>
-  `;
+  msgDiv.classList.add('chat-message', 'sent');
+  msgDiv.style.position = 'relative'; // required for absolute positioning of menu
+
+  
+  const userDiv = document.createElement('div');
+  userDiv.className = 'message-user';
+  userDiv.textContent = 'You';
+  msgDiv.appendChild(userDiv);
+
+  
+  const textDiv = document.createElement('div');
+  textDiv.className = 'message-text';
+  textDiv.textContent = messageText;
+  msgDiv.appendChild(textDiv);
+
+  
+  const timeDiv = document.createElement('div');
+  timeDiv.className = 'message-time';
+  timeDiv.textContent = new Date(messageData.timestamp).toLocaleTimeString();
+  msgDiv.appendChild(timeDiv);
+
+  
+  const optionsBtn = document.createElement('button');
+  optionsBtn.className = 'options-button';
+  optionsBtn.textContent = '⋮';
+  msgDiv.appendChild(optionsBtn);
+
+  
+  const menu = document.createElement('div');
+  menu.className = 'options-menu hidden';
+
+  const editOption = document.createElement('div');
+  editOption.className = 'options-item';
+  editOption.textContent = 'Edit';
+  editOption.onclick = () => {
+    console.log('Edit clicked for newly sent message');
+  };
+
+  const deleteOption = document.createElement('div');
+  deleteOption.className = 'options-item';
+  deleteOption.textContent = 'Delete';
+  deleteOption.onclick = () => {
+    console.log('Delete clicked for newly sent message');
+  };
+
+  menu.appendChild(editOption);
+  menu.appendChild(deleteOption);
+  msgDiv.appendChild(menu);
+
+  optionsBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', () => {
+    if (!menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+    }
+  });
+
   chatMessages.appendChild(msgDiv);
+
 
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -562,7 +670,7 @@ async function createMessage(name) {
   } catch (err) {
     console.error("Error sending message:", err);
   }
-  // Clear input
+
   input.value = '';
 }
 

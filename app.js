@@ -65,6 +65,7 @@ app.delete("/groupchat/:id", groupController.deleteGroup);
 app.post("/messages", msgController.createMessage);
 app.post("/member", groupController.createMember);
 app.get("/messages/:groupID" , msgController.getMsgBygID);
+// app.delete("/messages/:msgID", msgController.deleteMessage); 
 
 // app.post("/messages");
 
