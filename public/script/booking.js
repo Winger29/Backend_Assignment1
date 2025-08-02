@@ -1,7 +1,7 @@
 const clinicsMap = new Map();
 const doctorsMap = new Map();
 
-// Load all clinics on page load
+
 async function loadClinics() {
   try {
     const res = await fetch("/clinics");
@@ -24,7 +24,7 @@ async function loadClinics() {
   }
 }
 
-// Load doctors based on selected clinic name
+
 async function loadDoctorsByClinicId(clinicId) {
   if (!clinicId) return;
 
@@ -44,7 +44,7 @@ async function loadDoctorsByClinicId(clinicId) {
       select.appendChild(opt);
     });
 
-    loadTimeSlots(); // auto-load slots for first doctor
+    loadTimeSlots(); 
   } catch (err) {
     alert("Failed to load doctors");
     console.error(err);
@@ -65,7 +65,7 @@ function formatTime(timeStr) {
   return `${formattedHour}:${minute.toString().padStart(2, "0")} ${ampm}`;
 }
 
-// Load time slots based on selected doctor, clinic and date
+
 async function loadTimeSlots() {
   const clinicId =  document.getElementById("clinicSearch").value;
   const doctorId = document.getElementById("doctorSelect").value;
@@ -83,13 +83,13 @@ async function loadTimeSlots() {
     select.innerHTML = "";
     slots.forEach(slot => {
     const isoTime = new Date(slot.availableTime).toISOString();
-    const rawTime = isoTime.split("T")[1].split("Z")[0]; // → "10:00:00.000"
+    const rawTime = isoTime.split("T")[1].split("Z")[0]; 
     const [hours, minutes] = rawTime.split(":");
-    const sqlTime = `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}:00`; // Ensure full format for SQL
+    const sqlTime = `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}:00`; 
 
     const opt = document.createElement("option");
-    opt.value = sqlTime;  // this will be sent to the server!
-    opt.textContent = formatTime(sqlTime);  // still display user-friendly
+    opt.value = sqlTime;  
+    opt.textContent = formatTime(sqlTime);  
       select.appendChild(opt);
     });
   } catch (err) {
@@ -98,7 +98,7 @@ async function loadTimeSlots() {
   }
 }
 
-// Submit booking form
+
 async function submitBookingForm(e) {
   e.preventDefault();
 
@@ -141,25 +141,25 @@ async function submitBookingForm(e) {
 }
 
 function showTab(tabId) {
-  // Hide all tab content
+  
   document.querySelectorAll(".tab-content").forEach(tab => {
     tab.style.display = "none";
   });
 
-  // Remove active class from all buttons
+  
   document.querySelectorAll(".tab-button").forEach(btn => {
     btn.classList.remove("active");
   });
 
-  // Show selected tab
+  
   document.getElementById(tabId).style.display = "block";
 
-  // Highlight the clicked button
+  
   const tabButton = Array.from(document.querySelectorAll(".tab-button"))
     .find(btn => btn.getAttribute("onclick")?.includes(tabId));
   if (tabButton) tabButton.classList.add("active");
 
-  // Correctly run loadBookingHistory if tab is bookingHistory
+  
   if (tabId === "myBookings") {
     loadMyBookings();
   } else if (tabId === "bookingHistory") {
@@ -185,7 +185,7 @@ async function loadMyBookings() {
 
     const today = new Date().toISOString().split("T")[0];
 
-    // Only show future, non-cancelled bookings
+    
     const upcoming = bookings.filter(b => 
       b.status.toLowerCase() !== "cancelled" && b.bookingDate >= today
     );
@@ -205,7 +205,7 @@ async function loadMyBookings() {
           day: "numeric"
         });
 
-      const rawTime = b.appointmentTime.replace("Z", ""); // remove UTC
+      const rawTime = b.appointmentTime.replace("Z", ""); 
       const appointmentTime = new Date(rawTime).toLocaleTimeString("en-SG", {
         hour: "2-digit",
         minute: "2-digit",
@@ -237,7 +237,7 @@ function openBookingPopup() {
     document.getElementById("overlay").style.display = "block";
 }
 
-  // Hide the booking popup
+  
 function closeBookingPopup() {
     document.getElementById("bookingPopup").style.display = "none";
     document.getElementById("overlay").style.display = "none";
@@ -317,7 +317,7 @@ async function loadBookingHistory() {
           month: "short",
           day: "numeric"
         });
-        const rawTime = b.appointmentTime.replace("Z", ""); // remove UTC
+        const rawTime = b.appointmentTime.replace("Z", ""); 
         const appointmentTime = new Date(rawTime).toLocaleTimeString("en-SG", {
           hour: "2-digit",
           minute: "2-digit",
@@ -339,16 +339,16 @@ async function loadBookingHistory() {
 }
 
 async function editBooking(clinicId, bookingDate, bookingSeq) {
-  // Store identifiers temporarily
+  
   localStorage.setItem("editClinicId", clinicId);
   localStorage.setItem("editBookingDate", bookingDate);
   localStorage.setItem("editBookingSeq", bookingSeq);
 
-  // Show the popup
+  
   document.getElementById("editBookingPopup").style.display = "block";
   document.getElementById("overlay").style.display = "block";
 
-  await loadEditTimeSlots(clinicId, bookingDate, bookingSeq); // pass bookingSeq
+  await loadEditTimeSlots(clinicId, bookingDate, bookingSeq); 
 }
 
 
@@ -357,7 +357,7 @@ async function loadEditTimeSlots(clinicId, bookingDate, bookingSeq) {
   if (!token) return;
 
   try {
-    // Fetch all bookings for current user
+    
     const bookings = await fetch("/my-bookings", {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => res.json());
@@ -375,7 +375,7 @@ async function loadEditTimeSlots(clinicId, bookingDate, bookingSeq) {
 
     const doctorId = thisBooking.doctorId;
 
-    // Fetch available slots only for that doctor, date and clinic
+    
     const res = await fetch(`/availability?clinicId=${clinicId}&doctorId=${doctorId}&date=${bookingDate}`);
     const slots = await res.json();
 
@@ -434,7 +434,7 @@ function submitEditBooking() {
     if (result.message) {
       alert("Booking updated successfully.");
       closeEditPopup();
-      loadMyBookings(); // reload updated bookings
+      loadMyBookings(); 
     } else {
       alert("Failed to update booking: " + result.error);
     }
@@ -456,7 +456,7 @@ function closeEditPopup() {
 
 
 
-// Event listeners
+
 document.addEventListener("DOMContentLoaded", () => {
   loadClinics();
   document.getElementById("openBookingBtn").addEventListener("click", openBookingPopup);

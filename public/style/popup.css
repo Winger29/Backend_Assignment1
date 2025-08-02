@@ -145,3 +145,54 @@
   font-size: 13px;
   margin-left: 4px;
 }
+
+/* Signups Table Styling */
+.signups-list {
+  margin-top: 20px;
+}
+
+.signups-list h3 {
+  color: #d17842;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.signups-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: #fffdfc;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.signups-list th {
+  background-color: #e46f39;
+  color: white;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.signups-list td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #e0c2b3;
+  font-size: 14px;
+  color: #3e2f26;
+}
+
+.signups-list tr:nth-child(even) {
+  background-color: #f8f4f0;
+}
+
+.signups-list tr:hover {
+  background-color: #f0e8e0;
+}
+
+/* Adjust popup width for signups table */
+#signupsPopup {
+  width: 600px;
+  max-width: 90vw;
+}

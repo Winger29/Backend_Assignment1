@@ -14,6 +14,7 @@ const bookingController = require("./controllers/bookingController");
 const clinicController = require("./controllers/clinicController");
 const groupController = require("./controllers/groupController");
 const msgController = require("./controllers/messageController");
+const eventController=require("./controllers/eventsController");
 
 const app = express();
 const server = http.createServer(app); // 👈 Create HTTP server from Express
@@ -34,7 +35,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // Auth & Profile
 app.post("/signup", userController.registerUser);
 app.post("/login", userController.login);
-app.get("/profile", middlewareToken, userController.getProfile);
+
+app.get("/profile", middlewareToken,userController.getProfile);
 app.put("/profile", middlewareToken, userController.updateProfile);
 app.delete("/profile", middlewareToken, userController.deleteProfile);
 
@@ -47,12 +49,11 @@ app.get("/my-bookings", middlewareToken, bookingController.getMyBookings);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq", middlewareToken, bookingController.cancelBooking);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, bookingController.updateBookingTime);
 
-// Staff for Booking
+//Staff management for Booking
 app.get("/staff/clinic-bookings", middlewareToken, clinicController.getBookingsForStaff);
 app.get("/staff/clinic-info", middlewareToken, clinicController.getClinicInfoForStaff);
 app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.cancelBooking);
 app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);
-
 // Group Chat
 app.post("/groupchat", middlewareToken, groupController.createGroup);
 app.get("/groupchat",groupController.getAllGroups);
@@ -120,6 +121,22 @@ io.on('connection', (socket) => {
   });
 });
 
+// events routes
+app.get("/events", eventController.getAllEvents);
+app.get("/events/:id", eventController.getEventById);
+app.post("/events", eventController.createEvent);
+app.put("/events/:id", middlewareToken,  eventController.updateEvent);
+app.delete("/events/:id", middlewareToken, eventController.deleteEvent);
+app.post("/events/signup", middlewareToken, eventController.signupForEvent);
+app.get("/events/:eventId/signups", eventController.getEventSignups);
+app.get("/my-events", middlewareToken, eventController.getMyEvents);
+app.delete("/events/:eventId/cancel-signup", middlewareToken, eventController.cancelSignup);
+
+
+const externalApiController = require("./controllers/externalApiController");
+app.get("/api/external-events",middlewareToken, externalApiController.getFormattedEvents);
+
+
 // --- START SERVER ---
 server.listen(port, async () => {
   try {
@@ -127,12 +144,12 @@ server.listen(port, async () => {
     console.log("Database connected successfully");
   } catch (err) {
     console.error("Database connection error:", err);
-    process.exit(1);
+    process.exit(1);  
   }
   console.log(`Server (Express + Socket.IO) running on port ${port}`);
 });
 
-// ────── Graceful Shutdown ──────
+// Graceful shutdown on Ctrl+C
 process.on("SIGINT", async () => {
   console.log("Shutting down server...");
   await sql.close();

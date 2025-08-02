@@ -1,13 +1,13 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-// Get clinicId assigned to a staff member
+
 async function getClinicIdByStaffId(staffId) {
   let connection;
   try {
-    connection = await sql.connect(dbConfig); // use local connection instance
+    connection = await sql.connect(dbConfig); 
 
-    const request = connection.request(); // use connection-bound request
+    const request = connection.request(); 
     request.input("staffId", sql.VarChar(10), staffId);
 
     const result = await request.query(`
@@ -18,11 +18,11 @@ async function getClinicIdByStaffId(staffId) {
   } catch (err) {
     throw err;
   } finally {
-    if (connection) await connection.close(); // safely close only your own connection
+    if (connection) await connection.close(); 
   }
 }
 
-// Fetch all bookings for a clinic
+
 async function getBookingsByClinicId(clinicId) {
   let connection;
   try {
@@ -55,11 +55,11 @@ async function getBookingsByClinicId(clinicId) {
   } catch (err) {
     throw err;
   } finally {
-    if (connection) await connection.close(); // safely close
+    if (connection) await connection.close(); 
   }
 }
 
-// Confirm a booking (update status)
+
 async function confirmBooking(clinicId, bookingDate, bookingSeq, userId) {
   let connection;
   try {
@@ -89,7 +89,7 @@ async function confirmBooking(clinicId, bookingDate, bookingSeq, userId) {
 }
 
 
-// Delete booking only if status is 'cancelled'
+
 async function deleteBookingIfCancelled(clinicId, bookingDate, bookingSeq, userId) {
   let connection;
   try {

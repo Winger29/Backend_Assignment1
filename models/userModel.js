@@ -49,17 +49,26 @@ async function createOrganiser(data) {
   let connection;
   try{
       connection = await sql.connect(dbConfig);
+      
+      // Get the next organiser ID in O001 format
+      const idResult = await connection.request().query(`
+          SELECT MAX(CAST(SUBSTRING(organiserId, 2, LEN(organiserId)) AS INT)) AS maxId
+          FROM Organisers
+      `);
+      const nextNumber = (idResult.recordset[0].maxId || 0) + 1;
+      const newOrganiserId = 'O' + nextNumber.toString().padStart(3, '0');
+
       const result = await connection.request()
+      .input("organiserId", sql.VarChar(10), newOrganiserId)
       .input("fullName", sql.VarChar, data.fullName)
       .input("email", sql.VarChar, data.email)
       .input("password", sql.VarChar, data.password)
       .input("contactNumber", sql.VarChar, data.contactNumber || null)
       .query(`
-        INSERT INTO Organisers (fullName, email, password, contactNumber)
-        OUTPUT INSERTED.organiserId
-        VALUES (@fullName, @email, @password, @contactNumber)
+        INSERT INTO Organisers (organiserId, fullName, email, password, contactNumber)
+        VALUES (@organiserId, @fullName, @email, @password, @contactNumber)
       `);
-      return result.recordset[0].organiserId;
+      return newOrganiserId;
     } catch (error) {
       console.error('createOrganiser() error:', error);
       throw error;
