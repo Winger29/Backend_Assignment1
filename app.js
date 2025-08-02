@@ -26,7 +26,6 @@ const io = new Server(server, {
 });
 
 const port = process.env.PORT || 3000;
-const path = require("path");
 
 app.use(cors());
 app.use(express.json());
