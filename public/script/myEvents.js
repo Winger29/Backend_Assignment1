@@ -41,7 +41,7 @@ function displayMyEvents(events) {
       <div class="no-events">
         <h3>No Events Found</h3>
         <p>You haven't signed up for any events yet.</p>
-        <a href="eventUser.html" class="btn-primary">Browse Events</a>
+        <a href="eventUser.html">Browse Events</a>
       </div>
     `;
     return;
