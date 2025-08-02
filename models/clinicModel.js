@@ -1,7 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-
+//get clinicId from clinic-staff table
 async function getClinicIdByStaffId(staffId) {
   let connection;
   try {
@@ -22,7 +22,7 @@ async function getClinicIdByStaffId(staffId) {
   }
 }
 
-
+//get bookings for each clinic
 async function getBookingsByClinicId(clinicId) {
   let connection;
   try {
@@ -59,7 +59,7 @@ async function getBookingsByClinicId(clinicId) {
   }
 }
 
-
+//confirm booking
 async function confirmBooking(clinicId, bookingDate, bookingSeq, userId) {
   let connection;
   try {
@@ -88,54 +88,7 @@ async function confirmBooking(clinicId, bookingDate, bookingSeq, userId) {
   }
 }
 
-
-
-async function deleteBookingIfCancelled(clinicId, bookingDate, bookingSeq, userId) {
-  let connection;
-  try {
-    connection = await sql.connect(dbConfig);
-    const request = new sql.Request();
-
-    request.input("clinicId", sql.VarChar(10), clinicId);
-    request.input("bookingDate", sql.Date, bookingDate);
-    request.input("bookingSeq", sql.Int, bookingSeq);
-    request.input("userId", sql.VarChar(10), userId);
-
-    const statusCheck = await request.query(`
-      SELECT status FROM Booking
-      WHERE clinicId = @clinicId
-        AND bookingDate = @bookingDate
-        AND bookingSeq = @bookingSeq
-        AND userId = @userId;
-    `);
-
-    const booking = statusCheck.recordset[0];
-    if (!booking) return { success: false, reason: "Not found" };
-    if (booking.status !== "cancelled") return { success: false, reason: "Not cancelled" };
-
-    const deleteRequest = new sql.Request();
-    deleteRequest.input("clinicId", sql.VarChar(10), clinicId);
-    deleteRequest.input("bookingDate", sql.Date, bookingDate);
-    deleteRequest.input("bookingSeq", sql.Int, bookingSeq);
-    deleteRequest.input("userId", sql.VarChar(10), userId);
-
-    await deleteRequest.query(`
-      DELETE FROM Booking
-      WHERE clinicId = @clinicId
-        AND bookingDate = @bookingDate
-        AND bookingSeq = @bookingSeq
-        AND userId = @userId;
-    `);
-
-    return { success: true };
-  } catch (err) {
-    throw err;
-  } finally {
-    if (connection) await connection.close();
-  }
-}
-
-
+//get doctors according to their clinic
 async function getDoctorsByClinicId(clinicId) {
   let connection;
   try {
@@ -167,6 +120,7 @@ async function getDoctorsByClinicId(clinicId) {
   }
 }
 
+//cancel booking
 async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
   let connection;
   try {
@@ -190,6 +144,7 @@ async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
   }
 }
 
+//get clinic details
 async function getClinicDetailsById(clinicId) {
   let connection;
   try{
@@ -210,7 +165,6 @@ module.exports = {
   getClinicIdByStaffId,
   getBookingsByClinicId,
   confirmBooking,
-  deleteBookingIfCancelled,
   getDoctorsByClinicId,
   getClinicDetailsById,
   cancelBooking
