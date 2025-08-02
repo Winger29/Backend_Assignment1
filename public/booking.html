@@ -3,9 +3,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style/layout.css">
+    <link rel="stylesheet" type="text/css" href="style/popup.css">
+    <link rel="stylesheet" type="text/css" href="style/booking.css">
     <title>Senior</title>
 </head>
 <body>
+  <main>
+  <div class="tabs-container">
+  <button class="tab-button active" onclick="showTab('newBooking')">🩺 New Booking</button>
+  <button class="tab-button" onclick="showTab('myBookings')">📋 My Bookings</button>
+  <button class="tab-button" onclick="showTab('bookingHistory')">📜 Booking History</button>
+  </div>
+  <div id="newBooking" class="tab-content" style="display: block;">
+    <h2>📅 Book an Appointment</h2>
+    
+    <p>
+      Welcome to the <strong>SeniorCare Appointment Booking</strong> page. We are here to make your healthcare management easier and more accessible.
+    </p>
+
+    <p>
+      With just a few simple steps, you can schedule an appointment with your doctor at your preferred clinic.
+      Our booking system is designed to be <strong>senior-friendly</strong>, helping you avoid long queues and ensure timely care.
+    </p>
+
+    <ul>
+      <li>Choose from a list of nearby clinics</li>
+      <li>Select your preferred doctor</li>
+      <li>Pick a convenient date and time</li>
+      <li>Receive confirmation and reminders</li>
+    </ul>
+
+    <p>
+      Whether it’s for a routine check-up or a special consultation, our platform ensures that you receive the care you need without hassle. 
+      If you need assistance, feel free to reach out to our support staff at the clinic.
+    </p>
+
+    <button id="openBookingBtn">📝 Book an Appointment Now</button>
+    </div>
+    
+<!-- My Bookings Section -->
+<div id="myBookings" class="tab-content" style="display: none;">
+    <h2>📋 My Bookings</h2>
+    <div id="myBookingCards" class="booking-cards"></div>
+  </div>
+  <div id="bookingHistory" class="tab-content" style="display: none;">
+  <h2>📜 Booking History</h2>
+  <div id="bookingHistoryCards" class="booking-cards"></div> <!-- this ID must match -->
+</div>
+</main>
+
+
+<!--Update Time Slot-->
+<div id="editBookingPopup" style="display:none;" class="popup">
+  <span class="close-btn" onclick="closeEditPopup()">×</span>
+  <h3>Update Time Slot</h3>
+  <label for="editTimeSlot">Select New Time:</label>
+  <select id="editTimeSlot"></select><br>
+  <div class="popup-buttons">
+    <button onclick="submitEditBooking()">Confirm</button>
+    <button onclick="closeEditPopup()">Cancel</button>
+  </div>
+</div>
+
+<div id="overlay" class="overlay" onclick="closeBookingPopup()"></div>
+<!-- Booking Popup -->
+<div id="bookingPopup" class="popup" style="display: none; z-index: 1000;">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closeBookingPopup()">×</span>
+    <h2>Book an Appointment</h2>
+    <form id="bookingForm">
+      
+      <!-- Clinic Selection -->
+      <label for="bookingClinic">Clinic:</label>
+      <select id="clinicSearch" required>
+        <option value="">-- Select Clinic --</option>
+      </select>
+
+      <!-- Doctor Selection -->
+      <label for="bookingDoctor">Doctor:</label>
+      <select id="doctorSelect" required>
+        <option value="">-- Select Doctor --</option>
+      </select>
+
+      <!-- Booking Date -->
+      <label for="bookingDate">Date:</label>
+      <input type="date" id="bookingDate" required />
+
+      <!-- Time Slot -->
+      <label for="bookingSlot">Time:</label>
+      <select id="timeSlot" required>
+        <option value="">-- Select Time --</option>
+      </select>
+
+      <!-- Phone Number -->
+      <label for="bookingPhone">Phone:</label>
+      <input type="tel" id="phone" required placeholder="e.g. 91234567" pattern="[0-9]{8}" />
+
+      <!-- Booking Type -->
+      <label for="bookingType">Purpose:</label>
+      <input type="text" id="reason" required placeholder="e.g. Consultation" />
+
+      <!-- Submit -->
+      <button type="submit">Confirm Booking</button>
+    </form>
+  </div>
+</div>
+
     <!-- Load layout script -->
     <script src="script/layout.js"></script>
+    <script src="script/script.js"></script>
+    <script src="script/booking.js"></script>
+    
 </body>
