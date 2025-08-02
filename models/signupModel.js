@@ -72,6 +72,7 @@ async function getEventSignups(eventId) {
   }
 }
 
+
 module.exports = {
   getSignup,
   addSignup,

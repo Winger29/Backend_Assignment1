@@ -164,6 +164,8 @@ async function deleteEvent(id) {
   }
 }
 
+
+
 module.exports = {
   getAllEvents,
   getEventById,

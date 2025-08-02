@@ -20,11 +20,12 @@ app.use(express.static(path.join(__dirname, "public")));
 app.post("/signup", userController.registerUser);
 app.post("/login", userController.login);
 
+// User profile routes
 app.get("/profile", middlewareToken,userController.getProfile);
 app.put("/profile", middlewareToken, userController.updateProfile);
 app.delete("/profile", middlewareToken, userController.deleteProfile);
 
-
+// Booking routes
 app.get("/clinics", bookingController.getAllClinics);
 app.get("/doctors", bookingController.getDoctorsByClinicId);
 app.get("/availability", bookingController.getAvailableSlots);
@@ -33,13 +34,13 @@ app.get("/my-bookings",middlewareToken,bookingController.getMyBookings);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq", middlewareToken, bookingController.cancelBooking);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, bookingController.updateBookingTime);
 
-
+// Clinic routes
 app.get("/staff/clinic-bookings", middlewareToken, clinicController.getBookingsForStaff);
 app.get("/staff/clinic-info", middlewareToken, clinicController.getClinicInfoForStaff);
 app.put("/staff/cancel/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.cancelBooking);
 app.put("/staff/confirm/:clinicId/:bookingDate/:bookingSeq/:userId", middlewareToken, clinicController.confirmBookingByStaff);
 
-
+// events routes
 app.get("/events", eventController.getAllEvents);
 app.get("/events/:id", eventController.getEventById);
 app.post("/events", eventController.createEvent);
@@ -47,6 +48,8 @@ app.put("/events/:id", middlewareToken,  eventController.updateEvent);
 app.delete("/events/:id", middlewareToken, eventController.deleteEvent);
 app.post("/events/signup", middlewareToken, eventController.signupForEvent);
 app.get("/events/:eventId/signups", eventController.getEventSignups);
+app.get("/my-events", middlewareToken, eventController.getMyEvents);
+app.delete("/events/:eventId/cancel-signup", middlewareToken, eventController.cancelSignup);
 
 
 const externalApiController = require("./controllers/externalApiController");

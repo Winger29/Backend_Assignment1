@@ -105,6 +105,47 @@ async function getEventSignups(req, res) {
   }
 }
 
+async function getMyEvents(req, res) {
+  const seniorId = req.user?.id;
+  
+  if (!seniorId) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
+
+  try {
+    const events = await eventModel.getMyEvents(seniorId);
+    res.status(200).json(events);
+  } catch (error) {
+    console.error("Error fetching my events:", error);
+    res.status(500).json({ error: "Failed to fetch my events" });
+  }
+}
+
+async function cancelSignup(req, res) {
+  const seniorId = req.user?.id;
+  const eventId = parseInt(req.params.eventId);
+
+  if (!seniorId) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
+
+  if (!eventId) {
+    return res.status(400).json({ error: "Missing eventId" });
+  }
+
+  try {
+    const cancelled = await signupModel.cancelSignup(seniorId, eventId);
+    if (!cancelled) {
+      return res.status(404).json({ error: "Signup not found or already cancelled" });
+    }
+    
+    res.status(200).json({ message: "Signup cancelled successfully" });
+  } catch (error) {
+    console.error("Error cancelling signup:", error);
+    res.status(500).json({ error: "Failed to cancel signup" });
+  }
+}
+
 module.exports = {
   getAllEvents,
   getEventById,
@@ -113,4 +154,6 @@ module.exports = {
   deleteEvent,
   signupForEvent,
   getEventSignups,
+  getMyEvents,
+  cancelSignup,
 };
