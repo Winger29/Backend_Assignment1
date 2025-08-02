@@ -71,7 +71,7 @@ function insertSidebar() {
     const sidebar = `
         <div class="sidebar">
             <a href="senior.html">🏠 Dashboard</a>
-            <a href="activities.html">🏃‍♂️ Physical Activities</a>
+            <a href="activities.html">🏃‍♂️ Activities Tracker</a>
             <a href="booking.html">📅 Appointment</a>
             <a href="eventUser.html">🎉 Events</a>
             <a href="groupchat.html">💬 Messages</a>
