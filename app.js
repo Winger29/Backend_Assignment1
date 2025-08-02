@@ -25,6 +25,8 @@ const {
   validateBookingParams
 } = require("./middlewares/validateBooking");
 
+const routes = require('./public/routes/activityRoutes');
+
 const app = express();
 const server = http.createServer(app); // 👈 Create HTTP server from Express
 const io = new Server(server, {
@@ -147,6 +149,13 @@ app.get("/api/external-events",middlewareToken, externalApiController.getFormatt
 // Serve the Swagger UI at a specific route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
+//activities routes
+app.use('/api', routes); // API routes
+
+app.get('/', (req, res) => {
+  res.send('Activity Tracker API is running.');
+});
 
 // --- START SERVER ---
 server.listen(port, async () => {
