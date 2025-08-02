@@ -1,6 +1,6 @@
 const bookingModel = require("../models/bookingModel");
 
-
+//get all clinic for booking form
 async function getAllClinics(req, res) {
   try {
     const clinics = await bookingModel.getAllClinics();
@@ -10,7 +10,7 @@ async function getAllClinics(req, res) {
   }
 }
 
-
+//get doctors info according to clinic Id
 async function getDoctorsByClinicId(req, res) {
   const { clinicId } = req.query;
   if (!clinicId) {
@@ -25,7 +25,7 @@ async function getDoctorsByClinicId(req, res) {
   }
 }
 
-
+//get available slot of doctor at selected clinic
 async function getAvailableSlots(req, res) {
   const { clinicId, doctorId, date } = req.query;
   if (!clinicId || !doctorId || !date) {
@@ -42,7 +42,7 @@ async function getAvailableSlots(req, res) {
   }
 }
 
-
+//create booking
 async function createBooking(req, res) {
   const userId = req.user?.id; 
   const {
@@ -98,6 +98,7 @@ async function createBooking(req, res) {
   }
 }
 
+//to get you booked appointment
 async function getMyBookings(req, res) {
   const { id, role } = req.user;
 
@@ -114,6 +115,7 @@ async function getMyBookings(req, res) {
   }
 }
 
+//cancel booking
 async function cancelBooking(req, res) {
   const { clinicId, bookingDate, bookingSeq } = req.params;
   const { id: userId, role } = req.user;
@@ -131,6 +133,7 @@ async function cancelBooking(req, res) {
   }
 }
 
+//update booking Time
 async function updateBookingTime(req, res) {
   const { clinicId, bookingDate, bookingSeq } = req.params;
   const { appointmentTime } = req.body;
