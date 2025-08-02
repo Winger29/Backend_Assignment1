@@ -24,72 +24,30 @@ else {
 
 // Function to handle incoming messages for real time 
 socket.on('newMessage', (data) => {
+  if (data.senderid === userID) return; 
+
   const chatMessages = document.getElementById('chat-messages');
-
-  const isSentByUser = String(data.userId) === String(userID);
-
   const msgDiv = document.createElement('div');
-  msgDiv.classList.add('chat-message', isSentByUser ? 'sent' : 'received');
+  msgDiv.classList.add('chat-message', 'received');
 
-  const userDiv = document.createElement('div');
-  userDiv.className = 'message-user';
-  userDiv.textContent = isSentByUser ? 'You' : data.sender;
-  msgDiv.appendChild(userDiv);
-
-  const textDiv = document.createElement('div');
-  textDiv.className = 'message-text';
-  textDiv.textContent = data.message;
-  msgDiv.appendChild(textDiv);
-
-  const timeDiv = document.createElement('div');
-  timeDiv.className = 'message-time';
-  timeDiv.textContent = new Date(data.msgTime || data.timestamp).toLocaleTimeString();
-  msgDiv.appendChild(timeDiv);
-
-  if (isSentByUser) {
-    const optionsBtn = document.createElement('button');
-    optionsBtn.className = 'options-button';
-    optionsBtn.textContent = '⋮'; 
-
-    const menu = document.createElement('div');
-    menu.className = 'options-menu hidden';
-
-    const editOption = document.createElement('div');
-    editOption.className = 'options-item';
-    editOption.textContent = 'Edit';
-    editOption.onclick = () => {
-      console.log(`Edit clicked for message ID: ${data.messageId || '(no id)'}`);
-    };
-
-    const deleteOption = document.createElement('div');
-    deleteOption.className = 'options-item';
-    deleteOption.textContent = 'Delete';
-    deleteOption.onclick = () => {
-      console.log(`Delete clicked for message ID: ${data.messageId || '(no id)'}`);
-    };
-
-    menu.appendChild(editOption);
-    menu.appendChild(deleteOption);
-
-    optionsBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      menu.classList.toggle('hidden');
-    });
-
-    msgDiv.appendChild(optionsBtn);
-    msgDiv.appendChild(menu);
-
-    // Close menu if clicking outside
-    document.addEventListener('click', () => {
-      if (!menu.classList.contains('hidden')) {
-        menu.classList.add('hidden');
-      }
-    });
-  }
-
+  msgDiv.innerHTML = `
+    <div class="message-user">${data.sender}</div>
+    <div class="message-text">${data.message}</div>
+    <div class="message-time">${new Date(data.msgTime).toLocaleTimeString()}</div>
+  `;
   chatMessages.appendChild(msgDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+
 });
+
+socket.on("messageDeleted", ({ messageId }) => {
+  const msgDiv = document.querySelector(`.chat-message[data-message-id="${messageId}"]`);
+  if (msgDiv) {
+    msgDiv.innerHTML = `<div class="message-text deleted-text">This message has been deleted</div>`;
+    msgDiv.classList.add("deleted-message");
+  }
+});
+
 
 
 async function searchGroupByName(name) {
@@ -115,6 +73,7 @@ async function searchGroupByName(name) {
   }
 }
 
+// loads all the messages form oldest to newest and also checks if the messages are from the user or not 
 async function loadMessagesForGroup(name) {
   const chatMessages = document.getElementById('chat-messages');
   chatMessages.innerHTML = ""; 
@@ -156,20 +115,18 @@ async function loadMessagesForGroup(name) {
       const msgDiv = document.createElement('div');
       const isSentByUser = String(msg.seniorId) === String(userID);
       msgDiv.className = `chat-message ${isSentByUser ? 'sent' : 'received'}`;
+      msgDiv.dataset.messageId = msg.msgid;
     
-      // Username (You or fullName)
       const userDiv = document.createElement('div');
       userDiv.className = 'message-user';
       userDiv.textContent = isSentByUser ? 'You' : msg.fullName;
       msgDiv.appendChild(userDiv);
     
-      // Message content
       const textDiv = document.createElement('div');
       textDiv.className = 'message-text';
       textDiv.textContent = msg.message;
       msgDiv.appendChild(textDiv);
-    
-      // Time
+          
       const timeDiv = document.createElement('div');
       timeDiv.className = 'message-time';
       timeDiv.textContent = new Date(msg.msgtime).toLocaleString();
@@ -179,27 +136,32 @@ async function loadMessagesForGroup(name) {
       if (isSentByUser) {
         const optionsBtn = document.createElement('button');
         optionsBtn.className = 'options-button';
-        optionsBtn.innerHTML = '⋮'; // 3-dot vertical menu
+        optionsBtn.innerHTML = '⋮'; 
         msgDiv.appendChild(optionsBtn);
     
         const menu = document.createElement('div');
-        menu.className = 'options-menu hidden'; // initially hidden
+        menu.className = 'options-menu hidden'; 
     
         const editOption = document.createElement('div');
         editOption.className = 'options-item';
         editOption.textContent = 'Edit';
         editOption.onclick = () => {
-          console.log(`Edit clicked for message ID: ${msg.messageId}`);
-          // Add your edit logic here
+          console.log(`Edit clicked for message ID: ${msg.msgid}`);
+          startEditingMessage(msgDiv.dataset.messageId, textDiv.textContent.trim());
         };
-    
+        
         const deleteOption = document.createElement('div');
         deleteOption.className = 'options-item';
         deleteOption.textContent = 'Delete';
         deleteOption.onclick = () => {
-          console.log(`Delete clicked for message ID: ${msg.messageId}`);
-          // Add your delete logic here
+          const msgId = msgDiv.dataset.messageId;
+          console.log(`Delete clicked for message ID: ${msgId}`);
+          if (msgId) {
+            deleteMessageById(msgId, search.groupID);
+          }
         };
+        
+        
     
         menu.appendChild(editOption);
         menu.appendChild(deleteOption);
@@ -214,8 +176,7 @@ async function loadMessagesForGroup(name) {
       chatMessages.appendChild(msgDiv);
     });
     
-    
-
+  
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
   } catch (error) {
@@ -231,7 +192,7 @@ document.addEventListener('click', () => {
 });
 
 
-
+// gets all the groupchats the user is in 
 async function getGroupByUser() {
   if (!userID) {
       console.error("User not available");
@@ -280,9 +241,7 @@ async function getGroupByUser() {
                 }
             
                 const roomID = `group_${group.groupID}`;
-                socket.emit('joinGroup', group.groupID);
-                console.log(`Joining room: ${roomID}`);
-            
+                socket.emit('joinGroup', group.groupID);            
                 // Load messages
                 loadMessagesForGroup(roomName);
             });
@@ -578,7 +537,7 @@ async function createMessage(name) {
   const chatMessages = document.getElementById('chat-messages');
   const msgDiv = document.createElement('div');
   msgDiv.classList.add('chat-message', 'sent');
-  msgDiv.style.position = 'relative'; // required for absolute positioning of menu
+  msgDiv.style.position = 'relative'; 
 
   
   const userDiv = document.createElement('div');
@@ -613,13 +572,18 @@ async function createMessage(name) {
   editOption.textContent = 'Edit';
   editOption.onclick = () => {
     console.log('Edit clicked for newly sent message');
+    startEditingMessage(msgDiv.dataset.messageId, textDiv.textContent.trim());
   };
 
   const deleteOption = document.createElement('div');
   deleteOption.className = 'options-item';
   deleteOption.textContent = 'Delete';
   deleteOption.onclick = () => {
-    console.log('Delete clicked for newly sent message');
+    const msgId = msgDiv.dataset.messageId;
+    console.log(`Delete clicked for message ID: ${msgId}`);
+    if (msgId) {
+      deleteMessageById(msgId);
+    }
   };
 
   menu.appendChild(editOption);
@@ -663,10 +627,19 @@ async function createMessage(name) {
       },
       body: JSON.stringify(messageData),
   });
-    if (!response.ok) {
-      console.error("Failed to send message:", response.status);
-      return;
-    }
+  if (!response.ok) {
+    console.error("Failed to send message:", response.status);
+    return;
+  }
+  
+  const savedMessage = await response.json();
+  console.log("Message saved:", savedMessage);
+  const messageID = savedMessage[0]?.msgid;
+  
+  if (messageID) {
+    msgDiv.dataset.messageId = messageID; 
+    console.log("Message saved with ID:", messageID);
+  }
   } catch (err) {
     console.error("Error sending message:", err);
   }
@@ -675,20 +648,106 @@ async function createMessage(name) {
 }
 
 
+document.getElementById("update-button").addEventListener("click", async () => {
+  const messageInput = document.getElementById("message-input");
+  const newText = messageInput.value.trim();
+  const editingId = messageInput.dataset.editing;
+
+  if (!editingId || !newText) return;
+
+  try {
+    const response = await fetch(`${apibase}/message/${editingId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ content: newText })
+    });
+
+    if (!response.ok) throw new Error("Failed to update");
+
+    // Update the message in the DOM
+    const msgDiv = document.querySelector(`.chat-message[data-message-id="${editingId}"]`);
+    const textDiv = msgDiv.querySelector(".message-text");
+    textDiv.textContent = newText;
+
+    // Reset UI
+    messageInput.value = "";
+    delete messageInput.dataset.editing;
+    document.getElementById("update-button").classList.add("hidden");
+
+    alert("Message updated.");
+  } catch (err) {
+    console.error("Error updating message:", err);
+    alert("Failed to update message.");
+  }
+});
 
 
+async function startEditingMessage(messageId, messageText) {
+  const messageInput = document.getElementById("message-input");
+  const sendBtn = document.getElementById("sendMessageBtn");
+  const updateBtn = document.getElementById("update-button");
 
+  messageInput.value = messageText;
+  messageInput.dataset.editing = messageId;
+  messageInput.focus();
+
+  updateBtn.classList.remove("hidden");
+  sendBtn.classList.add("hidden");
+}
+
+
+// does the delete function of the message
+async function deleteMessageById(messageId) {
+  try {
+    
+    const response = await fetch(`${apibase}/messages/${messageId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error("Failed to delete message:", response.status);
+      return;
+    }
+    const groupName = document.getElementById('groupNameDisplay')?.textContent?.trim();
+    const groupInfo = await searchGroupByName(groupName);
+    // Update UI
+    const msgDiv = document.querySelector(`.chat-message[data-message-id="${messageId}"]`);
+    if (msgDiv) {
+      msgDiv.innerHTML = `
+        <div class="message-text deleted-text">This message has been deleted</div>
+      `;
+      msgDiv.classList.add("deleted-message");
+    }
+    console.log(groupInfo.groupID);
+    console.log(messageId);
+    socket.emit("deleteMessage", {
+      messageId,
+      groupID: groupInfo.groupID  
+    });
+    
+    
+    alert("Message deleted.");
+
+  } catch (err) {
+    console.error("Error deleting message:", err);
+  }
+}
+
+
+// listenter for the create chat when the user hits send 
 document.getElementById('sendMessageBtn').addEventListener('click', () => {
   const groupName = document.getElementById('groupNameDisplay')?.textContent?.trim();
   createMessage(groupName);
 });
 
 
-
-
-
-
-
+// loads when the page is loaded
 window.onload = () => {
     getGroupByUser();
 };

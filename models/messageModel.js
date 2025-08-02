@@ -1,13 +1,11 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
-
 async function getMessageBygID(id) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
     const query = "select groupmessages.msgid, Seniors.seniorId ,Seniors.fullName ,groupmessages.message, groupmessages.msgtime from groupmessages inner join Seniors on Seniors.seniorId = groupmessages.userid where groupid = @id order by groupmessages.msgtime;";
-
     const request = connection.request();
     request.input("id", id );
     const result = await request.query(query);
@@ -31,8 +29,36 @@ async function getMessageBygID(id) {
   }
 }
 
-async function createMessage(messageData) {
+async function getMessageByID(msgid) {
   let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "select msgid, userid, message, msgtime from groupmessages where msgid = @msgid;";
+    const request = connection.request();
+    request.input("msgid", msgid);
+    const result = await request.query(query);
+
+    if (result.recordset.length === 0) {
+      return null; 
+    }
+
+    return result.recordset;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
+async function createMessage(messageData) {
+let connection;
   try {
     connection = await sql.connect(dbConfig);
     const query =
@@ -43,11 +69,33 @@ async function createMessage(messageData) {
     request.input("message", messageData.content);
     request.input("msgtime", messageData.timestamp);
     const result = await request.query(query);
-    if (result.recordset.length === 0) {
-      return null; 
-    }
-    return result.recordset[0].id; 
+    const message =  result.recordset[0].id;
+    return await getMessageByID(message); 
 
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
+async function updateMessage(id, messageData) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "UPDATE groupmessages SET message = @message WHERE msgid = @msgId";
+    const request = connection.request();
+    request.input("message", messageData.content);
+    request.input("msgId", id);
+    await request.query(query);
+    return {message: "Message updated successfully" };
   } catch (error) {
     console.error("Database error:", error);
     throw error;
@@ -70,7 +118,7 @@ async function deleteMessage(id) {
     const request = connection.request();
     request.input("msgID", id);
     await request.query(query);
-    return { success: true, message: "Message deleted successfully" };
+    return {message: "Message deleted successfully" };
   } catch (error) {
     console.error("Database error:", error);
     throw error;
@@ -88,6 +136,8 @@ async function deleteMessage(id) {
   
 module.exports = {
     getMessageBygID,
+    getMessageByID,
     createMessage,
+    updateMessage,
     deleteMessage
 }

@@ -65,9 +65,8 @@ app.delete("/groupchat/:id", groupController.deleteGroup);
 app.post("/messages", msgController.createMessage);
 app.post("/member", groupController.createMember);
 app.get("/messages/:groupID" , msgController.getMsgBygID);
-// app.delete("/messages/:msgID", msgController.deleteMessage); 
-
-// app.post("/messages");
+app.delete("/messages/:msgID", msgController.deleteMessage); 
+app.put("/message/:msgID", msgController.updateMessage);
 
 // --- SOCKET.IO SETUP ---
 io.on('connection', (socket) => {
@@ -105,6 +104,15 @@ io.on('connection', (socket) => {
       msgTime: data.timestamp
     });
   });
+
+  socket.on("deleteMessage", ({ messageId, groupID }) => {
+    console.log(`deleteMessage received. msgID: ${messageId}, groupID: ${groupID}`);
+    const room = `group_${groupID}`;
+    console.log(`Emitting to room: ${room}`);
+    io.to(room).emit("messageDeleted", { messageId });
+  });
+  
+  
   
 
   socket.on('disconnect', () => {

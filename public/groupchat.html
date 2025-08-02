@@ -387,6 +387,10 @@
   padding-bottom: 50px; /* add extra space below messages */
 }
 
+.deleted-message .deleted-text {
+  font-style: italic;
+  color: gray;
+}
 
 </style>
 </head>
@@ -422,6 +426,7 @@
           <div class="input-group">
             <input type="text" class="form-control" id="messageInput" placeholder="Type a message...">
             <button id="sendMessageBtn" class="btn btn-primary" type="button">Send message</button>
+            <button id="update-button" class="hidden">Update</button>
           </div>
         </div>
       </div>

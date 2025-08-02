@@ -19,6 +19,25 @@ async function getMsgBygID(req,res) {
   }
 }
 
+async function getMessageById(req, res) {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid message ID" });
+      }
+  
+      const messageid = await msgModel.getMessageByID(id);
+      if (!messageid) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+  
+      res.json(messageid);
+    } catch (error) {
+      console.error("Controller error:", error);
+      res.status(500).json({ error: "Error retrieving message" });
+    }
+  }
+
 async function createMessage(req, res) {
 try {
     const newMessage = await msgModel.createMessage(req.body);
@@ -29,7 +48,47 @@ try {
 }
 }
 
+async function updateMessage(req, res) {
+try {
+    const id = parseInt(req.params.msgID);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid message ID" });
+    }
+
+    const updatedMessage = await msgModel.updateMessage(id, req.body);
+    if (!updatedMessage) {
+        return res.status(404).json({ error: "Message not found" });
+    }
+
+    res.json(updatedMessage);
+} catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error updating message" });
+}};
+
+
+async function deleteMessage(req, res) {
+try {
+    const id = parseInt(req.params.msgID);
+    if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid message ID" });
+    }
+
+    const deleteMsg = await msgModel.deleteMessage(id);
+    if (!deleteMsg) {
+    return res.status(404).json({ error: "Message not found" });
+    }
+
+    res.json(deleteMsg);
+} catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ error: "Error deleting message" });
+}
+}
 module.exports = {
   getMsgBygID,
-  createMessage
+  createMessage,
+  getMessageById,
+  updateMessage,
+  deleteMessage
 };
