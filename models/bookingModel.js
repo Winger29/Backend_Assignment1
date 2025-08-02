@@ -1,6 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
+//get all clinic for booking form
 async function getAllClinics() {
   let connection;
   try {
@@ -15,6 +16,7 @@ async function getAllClinics() {
   }
 }
 
+//get all doctor for each clinic
 async function getDoctorsByClinicId(clinicId) {
     let connection;
     try{
@@ -39,6 +41,7 @@ async function getDoctorsByClinicId(clinicId) {
     }
 }
 
+//get available time for doctor at each clinic
 async function getAvailableTimeSlots(clinicId, doctorId, weekday) {
   let connection;
   try {
@@ -62,6 +65,7 @@ async function getAvailableTimeSlots(clinicId, doctorId, weekday) {
   }
 }
 
+//create booking
 async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId, userId, phone, type, status }) {
   let connection;
   try {
@@ -110,6 +114,7 @@ async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId,
   }
 }
 
+//get bookings booked by seniors
 async function fetchBookingsBySeniorId(seniorId) {
   let connection;
   try {
@@ -142,6 +147,7 @@ async function fetchBookingsBySeniorId(seniorId) {
   }
 }
 
+//cancel booking
 async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
   let connection;
   try {
@@ -175,6 +181,7 @@ async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
   }
 }
 
+//update booking time
 async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newTime) {
   let connection;
   try {
@@ -261,6 +268,7 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
   }
 }
 
+//check to prevent double booking
 async function checkExistingBooking({ clinicId, doctorId, bookingDate, appointmentTime, userId }) {
   let connection;
   try{
