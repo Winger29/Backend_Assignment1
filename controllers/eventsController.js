@@ -1,5 +1,6 @@
 const eventModel = require("../models/eventsModel");
 const signupModel = require("../models/signupModel");
+const myEventsModel = require("../models/myEventsModel");
 
 async function getAllEvents(req, res) {
   try {
@@ -113,7 +114,7 @@ async function getMyEvents(req, res) {
   }
 
   try {
-    const events = await eventModel.getMyEvents(seniorId);
+    const events = await myEventsModel.getMyEvents(seniorId);
     res.status(200).json(events);
   } catch (error) {
     console.error("Error fetching my events:", error);
@@ -134,7 +135,7 @@ async function cancelSignup(req, res) {
   }
 
   try {
-    const cancelled = await signupModel.cancelSignup(seniorId, eventId);
+    const cancelled = await myEventsModel.cancelSignup(seniorId, eventId);
     if (!cancelled) {
       return res.status(404).json({ error: "Signup not found or already cancelled" });
     }
