@@ -15,6 +15,12 @@ const clinicController = require("./controllers/clinicController");
 const groupController = require("./controllers/groupController");
 const msgController = require("./controllers/messageController");
 const eventController=require("./controllers/eventsController");
+const validateUser = require("./middlewares/validateUser");
+const {
+  validateBooking,
+  validateTimeUpdate,
+  validateBookingParams
+} = require("./middlewares/validateBooking");
 
 const app = express();
 const server = http.createServer(app); // 👈 Create HTTP server from Express
@@ -33,8 +39,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // Auth & Profile
-app.post("/signup", userController.registerUser);
-app.post("/login", userController.login);
+app.post("/signup",validateUser.validateSignup, userController.registerUser);
+app.post("/login",validateUser.validateLogin, userController.login);
 
 app.get("/profile", middlewareToken,userController.getProfile);
 app.put("/profile", middlewareToken, userController.updateProfile);
@@ -44,10 +50,10 @@ app.delete("/profile", middlewareToken, userController.deleteProfile);
 app.get("/clinics", bookingController.getAllClinics);
 app.get("/doctors", bookingController.getDoctorsByClinicId);
 app.get("/availability", bookingController.getAvailableSlots);
-app.post("/book", middlewareToken, bookingController.createBooking);
+app.post("/book", middlewareToken, validateBooking,bookingController.createBooking);
 app.get("/my-bookings", middlewareToken, bookingController.getMyBookings);
 app.put("/bookings/:clinicId/:bookingDate/:bookingSeq", middlewareToken, bookingController.cancelBooking);
-app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, bookingController.updateBookingTime);
+app.put("/bookings/:clinicId/:bookingDate/:bookingSeq/update-time", middlewareToken, validateBookingParams,validateTimeUpdate,bookingController.updateBookingTime);
 
 //Staff management for Booking
 app.get("/staff/clinic-bookings", middlewareToken, clinicController.getBookingsForStaff);
@@ -134,6 +140,7 @@ app.delete("/events/:eventId/cancel-signup", middlewareToken, eventController.ca
 
 
 const externalApiController = require("./controllers/externalApiController");
+const { validateSignup } = require("./middlewares/validateUser");
 app.get("/api/external-events",middlewareToken, externalApiController.getFormattedEvents);
 
 
