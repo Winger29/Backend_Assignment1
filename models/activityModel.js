@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const dbConfig = require('../dbConfig');
+const dbConfig = require('../activityDbConfig');
 
 async function getAllActivities() {
   const pool = await sql.connect(dbConfig);
