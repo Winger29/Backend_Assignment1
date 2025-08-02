@@ -46,7 +46,7 @@ async function registerUser(req, res) {
   }
 }
 
-
+//login as senior, staff, organiser
 async function login(req, res) {
   const { role, email, password } = req.body;
 
@@ -84,6 +84,7 @@ async function login(req, res) {
   }
 }
 
+//get user profile
 async function getProfile(req, res) {
   const { role, id } = req.user;
 
@@ -105,7 +106,7 @@ async function getProfile(req, res) {
   }
 }
 
-
+//update user profile
 async function updateProfile(req, res) {
   try {
     const { role, id } = req.user;
@@ -135,6 +136,7 @@ async function updateProfile(req, res) {
   }
 }
 
+//delete profile
 async function deleteProfile(req, res) {
   try {
     const { role, id } = req.user;
