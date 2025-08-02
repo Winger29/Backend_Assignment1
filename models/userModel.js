@@ -50,24 +50,25 @@ async function createOrganiser(data) {
   try{
       connection = await sql.connect(dbConfig);
       
-      // Get the next organiser ID in O001 format
-      const idResult = await connection.request().query(`
-          SELECT MAX(CAST(SUBSTRING(organiserId, 2, LEN(organiserId)) AS INT)) AS maxId
-          FROM Organisers
-      `);
-      const nextNumber = (idResult.recordset[0].maxId || 0) + 1;
-      const newOrganiserId = 'O' + nextNumber.toString().padStart(3, '0');
-
-      const result = await connection.request()
-      .input("organiserId", sql.VarChar(10), newOrganiserId)
+      const insertResult = await connection.request()
       .input("fullName", sql.VarChar, data.fullName)
       .input("email", sql.VarChar, data.email)
       .input("password", sql.VarChar, data.password)
       .input("contactNumber", sql.VarChar, data.contactNumber || null)
       .query(`
-        INSERT INTO Organisers (organiserId, fullName, email, password, contactNumber)
-        VALUES (@organiserId, @fullName, @email, @password, @contactNumber)
+        INSERT INTO Organisers (fullName, email, password, contactNumber)
+        OUTPUT inserted.id
+        VALUES (@fullName, @email, @password, @contactNumber)
       `);
+
+      const insertedId = insertResult.recordset[0].id;
+
+      // Now get the computed organiserId
+      const idResult = await connection.request()
+        .input("id", sql.Int, insertedId)
+        .query(`SELECT organiserId FROM Organisers WHERE id = @id`);
+
+      const newOrganiserId = idResult.recordset[0].organiserId;
       return newOrganiserId;
     } catch (error) {
       console.error('createOrganiser() error:', error);
