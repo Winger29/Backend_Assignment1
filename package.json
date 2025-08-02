@@ -20,7 +20,9 @@
     "jsonwebtoken": "^9.0.2",
     "mssql": "^11.0.1",
     "socket": "^1.0.79",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1"
   },
   "repository": {
     "type": "git",

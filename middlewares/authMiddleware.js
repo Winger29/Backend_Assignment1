@@ -6,11 +6,13 @@ function verifyToken(req, res, next) {
 
   if (!token) return res.sendStatus(401); // Unauthorized
 
-  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
-    if (err) return res.sendStatus(403); 
-    req.user = user; 
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    req.user = decoded;
     next();
-  });
+  } catch (err) {
+    res.status(403).json({ error: "Invalid token" });
+  }
 }
 
 module.exports = verifyToken;

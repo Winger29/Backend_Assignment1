@@ -5,6 +5,8 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json"); 
 
 dotenv.config();
 
@@ -16,6 +18,7 @@ const groupController = require("./controllers/groupController");
 const msgController = require("./controllers/messageController");
 const eventController=require("./controllers/eventsController");
 const validateUser = require("./middlewares/validateUser");
+const externalApiController = require("./controllers/externalApiController");
 const {
   validateBooking,
   validateTimeUpdate,
@@ -139,9 +142,10 @@ app.get("/my-events", middlewareToken, eventController.getMyEvents);
 app.delete("/events/:eventId/cancel-signup", middlewareToken, eventController.cancelSignup);
 
 
-const externalApiController = require("./controllers/externalApiController");
-const { validateSignup } = require("./middlewares/validateUser");
+
 app.get("/api/external-events",middlewareToken, externalApiController.getFormattedEvents);
+// Serve the Swagger UI at a specific route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 // --- START SERVER ---
