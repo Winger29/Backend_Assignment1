@@ -1,8 +1,3 @@
--- ignore this portion if you already created a database 
-create database backend_db;
-use backend_db;
-drop database backend_db;
-
 
 
 ---Senior Table---
@@ -16,7 +11,7 @@ interests TEXT,
 profileImage VARCHAR(255),
 createdAt DATETIME Default GETDATE(),
 );
-  
+
 DECLARE @nextSeniorId VARCHAR(10);
 
 -- Generate next ID like S001, S002, ...
@@ -29,28 +24,29 @@ VALUES (
     @nextSeniorId, 
     'John Tan', 
     'john.tan@example.com', 
-    'hashedpassword999', 
+    '$2b$10$A9T4hksU8p6LqYQcTfYmuOiYByF.3Z/AbL0EVO2ZjZNH2UakX5v6q', -- fake bcrypt
     '1951-02-10', 
     'Walking, Chess', 
     'john.jpg'
 );
 
-INSERT INTO Seniors (seniorId,fullName, email, password, dob, interests, profileImage)
+-- Batch insert with fake bcrypt-hashed passwords
+INSERT INTO Seniors (seniorId, fullName, email, password, dob, interests, profileImage)
 VALUES 
-('S002','Alice Tan', 'alice.tan@example.com', 'hashedpassword123', '1950-08-12', 'Gardening, Walking, Reading', 'alice.jpg'),
-('S003','David Lim', 'david.lim@example.com', 'hashedpassword456', '1945-04-22', 'Chess, Tai Chi, Cooking', 'david.png'),
-('S004','Maria Ong', 'maria.ong@example.com', 'hashedpassword789', '1952-11-03', 'Knitting, Singing, Puzzles', 'maria.jpg'),
-('S005','James Goh', 'james.goh@example.com', 'hashedpassword234', '1943-03-10', 'Birdwatching, Sudoku, Walking', 'james.jpg'),
-('S006','Lucy Tan', 'lucy.tan@example.com', 'hashedpassword567', '1948-07-15', 'Painting, Singing, Dancing', 'lucy.jpg'),
-('S007','Peter Yeo', 'peter.yeo@example.com', 'hashedpassword890', '1950-01-25', 'Fishing, Tai Chi, Calligraphy', 'peter.jpg'),
-('S008','Agnes Lee', 'agnes.lee@example.com', 'hashedpassword321', '1953-06-30', 'Reading, Gardening, Yoga', 'agnes.jpg'),
-('S009','Mohamed Salleh', 'mohamed.salleh@example.com', 'hashedpassword654', '1946-11-17', 'Chess, Cooking, Movies', 'mohamed.jpg'),
-('S010','Helen Choo', 'helen.choo@example.com', 'hashedpassword987', '1944-12-05', 'Knitting, Singing, Cooking', 'helen.jpg'),
-('S011','Betty Koh', 'betty.koh@example.com', 'passbetty11', '1949-05-09', 'Yoga, Tai Chi', 'betty.jpg'),
-('S012','Ronald Lee', 'ronald.lee@example.com', 'passronald12', '1952-03-15', 'Reading, Gardening', 'ronald.jpg'),
-('S013','Jenny Sim', 'jenny.sim@example.com', 'passjenny13', '1947-08-30', 'Cooking, Singing', 'jenny.jpg'),
-('S014','Victor Goh', 'victor.goh@example.com', 'passvictor14', '1946-06-17', 'Walking, Chess', 'victor.jpg'),
-('S015','Grace Tan', 'grace.tan@example.com', 'passgrace15', '1950-01-05', 'Knitting, Reading', 'grace.jpg');
+('S002','Alice Tan', 'alice.tan@example.com', '$2b$10$hJ35uO2TnhI3uR/Sz59qxOqKiUYHZ8Y2uMbKeRmJzjsOTGiVLZm7O', '1950-08-12', 'Gardening, Walking, Reading', 'alice.jpg'),
+('S003','David Lim', 'david.lim@example.com', '$2b$10$FjdL1sPf6HxUCyE/EZlJCu8JDNPtwSJiFbPdQeZQj.6dE1RIAr4Z6', '1945-04-22', 'Chess, Tai Chi, Cooking', 'david.png'),
+('S004','Maria Ong', 'maria.ong@example.com', '$2b$10$n7Eo/Uv14Q06c.CsfWdoeuvTkMYGMDeSTmXkRWGP1K2opzpssy7LG', '1952-11-03', 'Knitting, Singing, Puzzles', 'maria.jpg'),
+('S005','James Goh', 'james.goh@example.com', '$2b$10$3MYh5TAg4coGxCqtEjF5ROz9H0bVdtS4DLPFh7LO5lZ6NyXc5HfGa', '1943-03-10', 'Birdwatching, Sudoku, Walking', 'james.jpg'),
+('S006','Lucy Tan', 'lucy.tan@example.com', '$2b$10$zKnK3OSZJvLz5JQ5Tn/WYuwB3yJZhoJJ3Tmy3gaep97Siy3U.MA6S', '1948-07-15', 'Painting, Singing, Dancing', 'lucy.jpg'),
+('S007','Peter Yeo', 'peter.yeo@example.com', '$2b$10$xu0k1bnOm9ZFKHz8wleIFODNcExN97gx3L6OzAiZkhXJuJOnvHpqC', '1950-01-25', 'Fishing, Tai Chi, Calligraphy', 'peter.jpg'),
+('S008','Agnes Lee', 'agnes.lee@example.com', '$2b$10$E2UvYe0wl/o3B29N9J7EjOhD.HwUTBOvCd6Gi9deNcQxux0L0w1Ae', '1953-06-30', 'Reading, Gardening, Yoga', 'agnes.jpg'),
+('S009','Mohamed Salleh', 'mohamed.salleh@example.com', '$2b$10$eW75PUx0JPqkJvfeXGeKd.q3cInZFEHPhA7ipz0w8P5RvKeBDwHpO', '1946-11-17', 'Chess, Cooking, Movies', 'mohamed.jpg'),
+('S010','Helen Choo', 'helen.choo@example.com', '$2b$10$7Fi9IByRL2kD.6hrzX9VVeD7O6xRbkfZ38NwGZCHyEwLkPBBAk5jC', '1944-12-05', 'Knitting, Singing, Cooking', 'helen.jpg'),
+('S011','Betty Koh', 'betty.koh@example.com', '$2b$10$N6K1xZAXjs9YVqmh7LqGE.9UgCVZqx5g4l5j65bQh6LHZjSEWyqaW', '1949-05-09', 'Yoga, Tai Chi', 'betty.jpg'),
+('S012','Ronald Lee', 'ronald.lee@example.com', '$2b$10$KmREaGi6JdTz2y4PAUMOeOe8r0roN9cRYc4.8RVAmHqg1WEXvBI8G', '1952-03-15', 'Reading, Gardening', 'ronald.jpg'),
+('S013','Jenny Sim', 'jenny.sim@example.com', '$2b$10$Tu/7Znxs6qJ1mPBXbozueuI1IdjWaF7D8N/Nm3A2gop.2sM6GEclS', '1947-08-30', 'Cooking, Singing', 'jenny.jpg'),
+('S014','Victor Goh', 'victor.goh@example.com', '$2b$10$Bl2v9Hd1dC7t1BR0zxayq.TAv2J/X8iC6fNbc9WI30kCwLwOgwRAe', '1946-06-17', 'Walking, Chess', 'victor.jpg'),
+('S015','Grace Tan', 'grace.tan@example.com', '$2b$10$0s8LZ9QbkSyLlnkYHfzoE.BXssCtIYYLgUJu1I6EF4zvF3C4ZdG9O', '1950-01-05', 'Knitting, Reading', 'grace.jpg');
 
 --- Clinic Table ---
 CREATE TABLE Clinic (
@@ -76,6 +72,7 @@ VALUES
 ('C010', 'ElderCare Plus Clinic', '15 Comfort Ave, Singapore 765432', '6333 2100', 'admin@eldercareplus.sg'),
 ('C011','Gentle Care Clinic','12 Bliss St, Singapore 777001','6000 1234','contact@gentlecare.sg'),
 ('C012','Senior Smiles Health','80 Hope Lane, Singapore 788002','6555 9090','hello@seniorsmiles.sg');
+
 --- ClinicStaff Table ---
 CREATE TABLE ClinicStaff (
     staffId VARCHAR(10) PRIMARY KEY,         -- e.g., CS001
@@ -116,20 +113,20 @@ CREATE TABLE StaffAccounts (
 
 INSERT INTO StaffAccounts (staffId, email, password, profileImage)
 VALUES
-('CS001', 'rachel.tan@sunshine.sg', 'hashedpass001', 'rachel.jpg'),
-('CS002', 'alan.koh@silverwellness.sg', 'hashedpass002', 'alan.jpg'),
-('CS003', 'lily.ng@silverwellness.sg', 'hashedpass003', 'lily.jpg'),
-('CS004', 'melissa.teo@care4seniors.sg', 'hashedpass004', 'melissa.jpg'),
-('CS005', 'grace.lee@sunshine.sg', 'hashedpass005', 'grace.jpg'),
-('CS006', 'noor.hamzah@silverwellness.sg', 'hashedpass006', 'noor.jpg'),
-('CS007', 'brandon.tan@care4seniors.sg', 'hashedpass007', 'brandon.jpg'),
-('CS008', 'irene.chua@sunshine.sg', 'hashedpass008', 'irene.jpg'),
-('CS011', 'tommy.ng@evergreen.sg', 'tommy123', 'tommy.jpg'),
-('CS012', 'wendy.chua@care4seniors.sg', 'wendy123', 'wendy.jpg'),
-('CS013', 'jasmine.ong@sunrisehc.sg', 'jasmine123', 'jasmine.jpg'),
-('CS015', 'emily.tan@goldenoak.sg', 'emily123', 'emily.jpg');
---- Doctor Table ---
+('CS001', 'rachel.tan@sunshine.sg', '$2b$10$VmB4w3DbYvQJ0Ex63uYXDu8Ov/qFzB2tJmtFZ/Nt8aSkmPa6LGJqC', 'rachel.jpg'),
+('CS002', 'alan.koh@silverwellness.sg', '$2b$10$C0BqwSnY1RfeRtaGZVCt.eYEVbGmpzKMciA9uP9znHWRgoVETB9vW', 'alan.jpg'),
+('CS003', 'lily.ng@silverwellness.sg', '$2b$10$Oyfy7LsDJKdtrz.PPOagcuPEeVRM78H0bsft0UISTuAuJZznKuwHa', 'lily.jpg'),
+('CS004', 'melissa.teo@care4seniors.sg', '$2b$10$K4nH0bk9vWQ1Mi3RB60AheMJ/MwF6T8O61Cu/TTQybZ37ovAH8Eq6', 'melissa.jpg'),
+('CS005', 'grace.lee@sunshine.sg', '$2b$10$7IdLVFl/Fx2ZVFAjzQW1POAxPBTdfSTOK/VgWJmlV4Ms84JqpWKeq', 'grace.jpg'),
+('CS006', 'noor.hamzah@silverwellness.sg', '$2b$10$NxS8QMSfRZahp8pQ6KnySeRjFhGeDmdwB2YhXZT7U9VXOvJPvx6ze', 'noor.jpg'),
+('CS007', 'brandon.tan@care4seniors.sg', '$2b$10$6yP6OYxoZbnJeY7XRx6G7uVWRZ7s7NVdZT6EjAWUebmf7FnR3VmXm', 'brandon.jpg'),
+('CS008', 'irene.chua@sunshine.sg', '$2b$10$BiB5omPIli0hx/sEYdRgcu5.v4k4YmJ4mdnWaNq12YH3UQOHZc1V6', 'irene.jpg'),
+('CS011', 'tommy.ng@evergreen.sg', '$2b$10$9hxPiELDUuz6MH9mXnJvMOLmJGrMBYqFXtf0MREO7EL7oR6f4zZuq', 'tommy.jpg'),
+('CS012', 'wendy.chua@care4seniors.sg', '$2b$10$ZlAqPiwH73GvSTmyvPvx2OxCmbUIUv29MRZxuAyCSg9G4tMA3WYDO', 'wendy.jpg'),
+('CS013', 'jasmine.ong@sunrisehc.sg', '$2b$10$DcoRhEkZNVqgUnZKbI7H/.yPPNeiBLDnNzqM1tZCZnNqE6Me2sqQe', 'jasmine.jpg'),
+('CS015', 'emily.tan@goldenoak.sg', '$2b$10$cvzjJlm1d7jD1GblzxJ7zePYmCu9EvZOPuCOijv2.0yrrrsIzPyPm', 'emily.jpg');
 
+--- Doctor Table ---
 CREATE TABLE Doctor (
     doctorId VARCHAR(10) PRIMARY KEY,         -- e.g., D001
     name VARCHAR(100) NOT NULL,
@@ -184,7 +181,6 @@ VALUES
 ('D012', 'C001', 'Friday', '10:30'),
 ('D013', 'C005', 'Monday', '14:00');
 
-
 --- Booking Table ---
 CREATE TABLE Booking (
     clinicId VARCHAR(10),                 -- FK
@@ -204,41 +200,6 @@ CREATE TABLE Booking (
     FOREIGN KEY (userId) REFERENCES Seniors(seniorId)
 );
 
-DECLARE @clinicId VARCHAR(10) = 'C001';
-DECLARE @bookingDate DATE = '2025-07-07';
-DECLARE @nextSeq INT;
-
--- Get next booking number for this clinic on this date
-SELECT @nextSeq = ISNULL(MAX(bookingSeq), 0) + 1
-FROM Booking
-WHERE clinicId = @clinicId AND bookingDate = @bookingDate;
-
--- Insert booking (correct primary key pattern)
-INSERT INTO Booking (
-    clinicId, bookingDate, bookingSeq, appointmentTime,
-    doctorId, userId, phone, type, status
-) VALUES (
-    @clinicId, @bookingDate, @nextSeq, '10:30',
-    'D001', 'S001', '91234567', 'Orthopedic Consult', 'confirmed'
-);
-
-INSERT INTO Booking (clinicId, bookingDate, bookingSeq, appointmentTime, doctorId, userId, phone, type, status)
-VALUES 
-('C001', '2025-07-08', 1, '11:00', 'D010', 'S002', '92345678', 'Heart Checkup', 'pending'),
-('C001', '2025-07-09', 1, '10:00', 'D007', 'S003', '93456789', 'Family Review', 'confirmed'),
-('C001', '2025-07-11', 1, '13:30', 'D005', 'S004', '94567890', 'Endocrine Consult', 'pending'),
-('C002', '2025-07-08', 1, '10:00', 'D002', 'S005', '95678901', 'Cardiology Check', 'confirmed'),
-('C002', '2025-07-10', 1, '14:00', 'D004', 'S006', '96789012', 'Skin Consultation', 'pending'),
-('C002', '2025-07-11', 1, '09:30', 'D008', 'S007', '97890123', 'Eye Screening', 'confirmed'),
-('C003', '2025-07-07', 1, '08:30', 'D006', 'S008', '98901234', 'Neuro Follow-up', 'confirmed'),
-('C003', '2025-07-09', 1, '11:00', 'D003', 'S009', '90012345', 'Geriatric Visit', 'pending'),
-('C003', '2025-07-10', 1, '15:00', 'D009', 'S010', '91123456', 'Senior Health Screen', 'confirmed'),
-('C011', '2025-07-13', 1, '09:00', 'D011', 'S011', '91231234', 'Geriatric Care', 'confirmed'),
-('C011', '2025-07-14', 1, '10:00', 'D011', 'S012', '92342345', 'Health Screening', 'pending'),
-('C001', '2025-07-13', 2, '10:30', 'D012', 'S013', '93453456', 'General Checkup', 'confirmed'),
-('C005', '2025-07-15', 1, '14:00', 'D013', 'S014', '94564567', 'Ortho Consultation', 'pending'),
-('C002', '2025-07-14', 2, '09:30', 'D002', 'S015', '95675678', 'Cardiology Follow-up', 'confirmed');
-
 select * from seniors
 select * from clinic
 select * from ClinicStaff
@@ -247,10 +208,7 @@ select * from doctor
 select * from doctorclinic
 select * from Booking
 
-
--- kaiwen's tables
-
-
+-- Kaiwen's tables --
 create table GroupChat (
 groupID int not null identity(1,1) primary key,
 groupName varchar(50) not null,
@@ -385,28 +343,36 @@ select * from GroupChat;
 select * from GroupMember;
 select * from groupmessages;
 
-drop table groupmessages;
-drop table GroupMember;
-drop table Groupchat;
 
 select Seniors.fullName, groupmessages.message, groupmessages.msgtime from groupmessages inner join Seniors on Seniors.seniorId = groupmessages.userid where groupid = 3 order by groupmessages.msgtime;
+
+create table groupmessages(
+msgid int not null identity (1,1) primary key,
+userid varchar(10) not null,
+groupid int not null,
+message varchar(255) not null,
+msgtime datetime not null,
+constraint fk_groupid4msg foreign key(groupid) references Groupchat(groupid),
+constraint fk_userid4msg foreign key(userid) references Seniors(seniorId)
+);
 
 -- fang yu xuan's tables 
 CREATE TABLE Organisers (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    organiserId AS CAST(('O' + RIGHT('000' + CAST(id AS VARCHAR), 3)) AS VARCHAR(10)) PERSISTED UNIQUE,
+    organiserId AS (CAST('O' + RIGHT('000' + CONVERT(VARCHAR, id), 3) AS VARCHAR(10))) PERSISTED UNIQUE,
     fullName VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
     contactNumber VARCHAR(15)
 );
 
-
 INSERT INTO Organisers (fullName, email, password, contactNumber)
 VALUES
 ('Emily Wong', 'emily.wong@example.com', 'hashedpw1', '91234567'),
 ('Michael Tan', 'michael.tan@example.com', 'hashedpw2', '98765432'),
 ('Sarah Lim', 'sarah.lim@example.com', 'hashedpw3', '87654321');
+
+drop table organisers
 
 
 CREATE TABLE Events (
@@ -420,7 +386,6 @@ CREATE TABLE Events (
     FOREIGN KEY (organiserId) REFERENCES Organisers(organiserId)
 );
 
-
 INSERT INTO Events (organiserId, title, eventDate, startTime, endTime, location)
 VALUES
 ('O001', 'Health Talk: Nutrition for Seniors', '2025-07-21', '10:00', '12:00', 'Community Hall A'),
@@ -429,23 +394,29 @@ VALUES
 ('O003', 'Gardening Workshop', '2025-08-02', '08:00', '10:30', 'Golden Years Garden'),
 ('O003', 'Digital Skills: Intro to WhatsApp', '2025-08-05', '10:00', '11:30', 'IT Lab, Bukit Timah CC');
 
+-- Sign Up Events --
+CREATE TABLE eventSignups (
+    signupId INT IDENTITY(1,1) PRIMARY KEY,
+    seniorId VARCHAR(10) NOT NULL,
+    eventId INT NOT NULL,
+    CONSTRAINT UQ_senior_event UNIQUE (seniorId, eventId),
+    CONSTRAINT FK_eventSignups_Events FOREIGN KEY (eventId) REFERENCES Events(eventId) ON DELETE CASCADE,
+    CONSTRAINT FK_eventSignups_Seniors FOREIGN KEY (seniorId) REFERENCES Seniors(seniorId) ON DELETE CASCADE
+);
 
 -- sarrinah's tables 
 CREATE TABLE Activities (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    userId INT NOT NULL,
-    activityName VARCHAR(100) NOT NULL,
-    duration INT NOT NULL,
-    date DATE NOT NULL,
-    notes TEXT,
-    createdAt DATETIME DEFAULT GETDATE()
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  userId INT NOT NULL,
+  activityName VARCHAR(100) NOT NULL,
+  duration INT NOT NULL,
+  date DATE NOT NULL,
+  notes TEXT NULL
 );
- 
+
 INSERT INTO Activities (userId, activityName, duration, date, notes)
-VALUES 
-(1, 'Brisk Walking', 20, '2025-06-01', 'Walked at the nearby park'),
-(2, 'Cooking', 45, '2025-06-02', 'Prepared lunch with vegetables'),
-(1, 'Gardening', 30, '2025-06-03', 'Watered and trimmed plants');
+VALUES (1, 'Read a book', 30, '2025-07-15', 'I manage to read a few chapters of my favourite book.');
+ 
 
 
 -- akshaya 
