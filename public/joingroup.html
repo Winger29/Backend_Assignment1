@@ -1,0 +1,89 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="style/layout.css">
+    <link rel="stylesheet" type="text/css" href="style/popup.css">
+    <title>Senior</title>
+</head>
+<style>
+    .join-group-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.join-group-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+</style>
+<body>
+    <div class="join-group-container">
+        <h2>Join a Group</h2>
+        <form id="joinGroupForm">
+          <div class="form-group">
+            <label for="groupName">Group Name</label>
+            <input type="text" id="groupName" name="groupName" required>
+          </div>
+      
+          <div class="form-group">
+            <label for="description">Group Description</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+          </div>
+      
+          <div class="form-group">
+            <label for="interest">Group Interest</label>
+            <input type="text" id="interest" name="interest" required>
+          </div>
+      
+          <button type="submit">Join Group</button>
+        </form>
+      </div>
+      
+    <!-- Load layout script -->
+     
+    <script src="script/layout.js"></script>
+    <script src="script/script.js"></script>
+    <script src="script/joinGroup.js"></script>
+</body>
+</html>

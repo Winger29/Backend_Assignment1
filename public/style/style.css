@@ -215,3 +215,12 @@
 .btn-link:hover {
   background-color: #cf5f2a;
 }
+
+#result {
+  text-align: center;
+  color: crimson;
+  font-size: 14px;
+}
+
+
+
