@@ -29,7 +29,7 @@ async function registerUser(req, res) {
       userId = await userModel.createOrganiser(req.body);
     }
 
-    const token = jwt.sign({ id: userId, role }, process.env.SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ id: userId,role }, process.env.SECRET_KEY, { expiresIn: "12h" });
 
     return res.status(201).json({
       message: `${role.charAt(0).toUpperCase() + role.slice(1)} account created successfully`,
@@ -55,18 +55,20 @@ async function login(req, res) {
 
   try {
     const user = await userModel.loginUser(role.toLowerCase(), email);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!user || !passwordMatch) {
+    if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
   const token = jwt.sign(
-  { id: user.userId, role: role.toLowerCase() },
+  { id: user.userId, role: role.toLowerCase(), Name: user.fullName },
   process.env.SECRET_KEY,
-  { expiresIn: "1h" }
+  { expiresIn: "1d" }
 );
-
     return res.status(200).json({
       message: `Welcome, ${user.fullName}`,
       userId: user.userId,
@@ -165,5 +167,3 @@ module.exports = {
     deleteProfile,
     getProfile,
 };
-
-
