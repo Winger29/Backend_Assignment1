@@ -39,11 +39,28 @@ async function createEvent(req, res) {
 
 async function updateEvent(req, res) {
   const id = parseInt(req.params.id);
+  const userRole = req.user?.role;
+  const userId = req.user?.id;
+  
   try {
     const existing = await eventModel.getEventById(id);
     if (!existing) return res.status(404).json({ error: "Event not found" });
 
-    const updated = await eventModel.updateEvent(id, req.body);
+    // Check authorization for organisers
+    if (userRole === "organiser") {
+      const isOwner = await eventModel.isEventOwnedByOrganiser(id, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "You can only edit events you created" });
+      }
+      // Remove organiserId from request body to prevent changing ownership
+      delete req.body.organiserId;
+    }
+
+    const updated = await eventModel.updateEvent(id, req.body, userRole === "organiser" ? userId : null);
+    if (!updated) {
+      return res.status(404).json({ error: "Event not found or you don't have permission to edit it" });
+    }
+    
     res.status(200).json(updated);
   } catch (error) {
     console.error("Error updating event:", error);
@@ -56,9 +73,23 @@ async function updateEvent(req, res) {
 
 async function deleteEvent(req, res) {
   const id = parseInt(req.params.id);
+  const userRole = req.user?.role;
+  const userId = req.user?.id;
+  
   try {
-    const deleted = await eventModel.deleteEvent(id);
-    if (!deleted) return res.status(404).json({ error: "Event not found." });
+    // Check authorization for organisers
+    if (userRole === "organiser") {
+      const isOwner = await eventModel.isEventOwnedByOrganiser(id, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "You can only delete events you created" });
+      }
+    }
+
+    const deleted = await eventModel.deleteEvent(id, userRole === "organiser" ? userId : null);
+    if (!deleted) {
+      return res.status(404).json({ error: "Event not found or you don't have permission to delete it" });
+    }
+    
     res.status(200).json({ message: "Event deleted successfully." });
   } catch (error) {
     console.error("Error deleting event:", error);

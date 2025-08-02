@@ -127,6 +127,18 @@ flatpickr("#endTime", { enableTime: true, noCalendar: true, dateFormat: "H:i", t
       return;
     }
 
+    // Extract user ID from JWT token
+    let organiserId = null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      organiserId = payload.id;
+    } catch (e) {
+      console.error("Error parsing token:", e);
+      statusMsg.textContent = "❌ Error getting user information. Please log in again.";
+      statusMsg.style.color = "red";
+      return;
+    }
+
     const formData = {
       title: form.title.value.trim(),
       description: form.description.value.trim(),
@@ -134,7 +146,7 @@ flatpickr("#endTime", { enableTime: true, noCalendar: true, dateFormat: "H:i", t
       eventDate: form.date.value,
       startTime: form.startTime.value,
       endTime: form.endTime.value,
-      organiserId: localStorage.getItem("userId") || "ORG001" // or however you get organiserId
+      organiserId: organiserId
     };
 
     // Basic time validation

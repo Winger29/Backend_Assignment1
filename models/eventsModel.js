@@ -7,19 +7,20 @@ async function getAllEvents() {
     connection = await sql.connect(dbConfig);
     const query = `
       SELECT 
-    e.eventId,
-    e.title,
-    e.organiserId,
-    o.fullName AS organiserName,
-    e.eventDate,
-    e.startTime,
-    e.endTime,
-    e.location
-FROM 
-    Events e
-LEFT JOIN 
-    Organisers o ON e.organiserId = o.organiserId
-
+        e.eventId,
+        e.title,
+        e.organiserId,
+        COALESCE(o.fullName, 'Unknown organiser') AS organiserName,
+        e.eventDate,
+        e.startTime,
+        e.endTime,
+        e.location
+      FROM 
+        Events e
+      LEFT JOIN 
+        Organisers o ON e.organiserId = o.organiserId
+      ORDER BY 
+        e.eventDate ASC, e.startTime ASC
     `;
     const result = await connection.request().query(query);
     return result.recordset;
@@ -97,26 +98,40 @@ async function createEvent(eventData) {
   }
 }
 
-async function updateEvent(id, eventData) {
+async function updateEvent(id, eventData, organiserId = null) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const { organiserId, title, eventDate, startTime, endTime, location } = eventData;
+    const { title, eventDate, startTime, endTime, location } = eventData;
 
-    const query = `
-      UPDATE Events
-      SET organiserId = @organiserId,
-          title = @title,
-          eventDate = @eventDate,
-          startTime = @startTime,
-          endTime = @endTime,
-          location = @location
-      WHERE eventId = @id;
-    `;
+    // If organiserId is provided, only allow update if the event belongs to that organiser
+    let query;
+    let request = connection.request();
+    
+    if (organiserId) {
+      query = `
+        UPDATE Events
+        SET title = @title,
+            eventDate = @eventDate,
+            startTime = @startTime,
+            endTime = @endTime,
+            location = @location
+        WHERE eventId = @id AND organiserId = @organiserId;
+      `;
+      request.input("organiserId", sql.VarChar(10), organiserId);
+    } else {
+      query = `
+        UPDATE Events
+        SET title = @title,
+            eventDate = @eventDate,
+            startTime = @startTime,
+            endTime = @endTime,
+            location = @location
+        WHERE eventId = @id;
+      `;
+    }
 
-    const request = connection.request();
     request.input("id", sql.Int, id);
-    request.input("organiserId", sql.VarChar(10), organiserId);
     request.input("title", sql.VarChar(100), title);
     request.input("eventDate", sql.Date, eventDate);
     request.input("startTime", sql.VarChar(8), startTime);  
@@ -140,12 +155,21 @@ async function updateEvent(id, eventData) {
   }
 }
 
-async function deleteEvent(id) {
+async function deleteEvent(id, organiserId = null) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
-    const query = "DELETE FROM Events WHERE eventId = @id";
-    const request = connection.request();
+    
+    let query;
+    let request = connection.request();
+    
+    if (organiserId) {
+      query = "DELETE FROM Events WHERE eventId = @id AND organiserId = @organiserId";
+      request.input("organiserId", sql.VarChar(10), organiserId);
+    } else {
+      query = "DELETE FROM Events WHERE eventId = @id";
+    }
+    
     request.input("id", sql.Int, id);
 
     const result = await request.query(query);
@@ -166,10 +190,36 @@ async function deleteEvent(id) {
 
 
 
+async function isEventOwnedByOrganiser(eventId, organiserId) {
+  let connection;
+  try {
+    connection = await sql.connect(dbConfig);
+    const query = "SELECT eventId FROM Events WHERE eventId = @eventId AND organiserId = @organiserId";
+    const request = connection.request();
+    request.input("eventId", sql.Int, eventId);
+    request.input("organiserId", sql.VarChar(10), organiserId);
+    
+    const result = await request.query(query);
+    return result.recordset.length > 0;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw error;
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+}
+
 module.exports = {
   getAllEvents,
   getEventById,
   createEvent,
   updateEvent,
   deleteEvent,
+  isEventOwnedByOrganiser,
 };

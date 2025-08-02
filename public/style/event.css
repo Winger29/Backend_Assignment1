@@ -130,3 +130,46 @@ main h1 {
 .event-card a:hover {
   text-decoration: underline;
 }
+
+/* Button variants */
+.btn-primary {
+  background-color: #e46f39 !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background-color: #e46f39 !important;
+}
+
+.btn-secondary {
+  background-color: #6c757d !important;
+  color: white !important;
+}
+
+.btn-secondary:hover {
+  background-color: #545b62 !important;
+}
+
+.btn-danger {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+.btn-danger:hover {
+  background-color: #c82333 !important;
+}
+
+/* Event actions container */
+.event-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Text muted class */
+.text-muted {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 14px;
+}

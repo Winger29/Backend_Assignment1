@@ -11,10 +11,34 @@ async function fetchEvents() {
     const container = document.getElementById("eventsContainer");
     container.innerHTML = "";
 
+    // Get current user info from localStorage
+    const token = localStorage.getItem("token");
+    let currentUserId = null;
+    
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        currentUserId = payload.id;
+      } catch (e) {
+        console.error("Error parsing token:", e);
+      }
+    }
+
     events.forEach(event => {
       const div = document.createElement("div");
       div.classList.add("event-card");
       div.id = `event-${event.eventId}`;
+
+      // Check if current user is the organiser of this event
+      const isOwner = currentUserId === event.organiserId;
+      
+      let actionButtons = '';
+      if (isOwner) {
+        actionButtons = `
+          <button onclick="deleteEvent(${event.eventId})" class="btn-danger">Delete</button>
+          <button onclick='showEditForm(${JSON.stringify(event)})' class="btn-secondary">Edit</button>
+        `;
+      } 
 
       div.innerHTML = `
         <h2>${event.title}</h2>
@@ -22,9 +46,10 @@ async function fetchEvents() {
         <p><strong>Date:</strong> ${formatDate(event.eventDate)}</p>
         <p><strong>Time:</strong> ${event.startTime} – ${event.endTime}</p>
         <p><strong>Location:</strong> ${event.location}</p>
-        <button onclick="deleteEvent(${event.eventId})">Delete</button>
-        <button onclick='showEditForm(${JSON.stringify(event)})'>Edit</button>
-        <button onclick="viewSignups(${event.eventId})">View Signups</button>
+        <div class="event-actions">
+          ${actionButtons}
+          <button onclick="viewSignups(${event.eventId})" class="btn-primary">View Signups</button>
+        </div>
       `;
 
       container.appendChild(div);
@@ -38,13 +63,29 @@ async function fetchEvents() {
 async function deleteEvent(id) {
   if (!confirm("Are you sure you want to delete this event?")) return;
 
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please log in to delete events.");
+    return;
+  }
+
   try {
-    const res = await fetch(`/events/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Failed to delete event");
-    fetchEvents()
+    const res = await fetch(`/events/${id}`, { 
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Failed to delete event");
+    }
+    
+    fetchEvents();
   } catch (err) {
     console.error("Delete error:", err);
-    alert("Failed to delete event.");
+    alert(err.message || "Failed to delete event.");
   }
 }
 
@@ -106,17 +147,30 @@ function showEditForm(event) {
     };
 
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in to edit events.");
+        return;
+      }
+
       const res = await fetch(`/events/${event.eventId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(updated)
       });
 
-      if (!res.ok) throw new Error("Failed to update event");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update event");
+      }
+      
       fetchEvents();
     } catch (err) {
       console.error("Update error:", err);
-      alert("Failed to update event.");
+      alert(err.message || "Failed to update event.");
     }
   };
 }
