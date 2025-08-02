@@ -67,7 +67,7 @@ async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId,
   try {
     connection = await sql.connect(dbConfig);
 
-    // Get the next booking sequence for this clinic and date
+    
     const seqResult = await connection.request()
       .input("clinicId", sql.VarChar, clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -80,7 +80,7 @@ async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId,
 
     const nextSeq = seqResult.recordset[0].nextSeq;
     const timeOnly = new Date(`1970-01-01T${appointmentTime}Z`);
-    // Insert the new booking
+    
     await connection.request()
       .input("clinicId", sql.VarChar, clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -147,7 +147,7 @@ async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
   try {
     connection = await sql.connect(dbConfig);
 
-    // Only update if the booking belongs to the user
+    
     const result = await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -180,7 +180,7 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
   try {
     connection = await sql.connect(dbConfig);
 
-    // Step 1: Get the doctorId for the booking
+    
     const result = await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -200,14 +200,14 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
 
     const doctorId = result.recordset[0].doctorId;
 
-    // Step 2: Get the day of the week from bookingDate
+    
     const dayNameResult = await connection.request()
       .input("bookingDate", sql.Date, bookingDate)
       .query(`SELECT DATENAME(WEEKDAY, @bookingDate) AS dayName`);
     
     const availableDay = dayNameResult.recordset[0].dayName;
 
-    // Step 3: Check doctor availability and conflicts
+    
     const availabilityCheck = await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("doctorId", sql.VarChar(10), doctorId)
@@ -235,7 +235,7 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
       throw new Error("Selected time is not available for this doctor on that day");
     }
 
-    // Step 4: Perform the update
+    
     await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("bookingDate", sql.Date, bookingDate)

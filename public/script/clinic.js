@@ -88,7 +88,7 @@ function renderBookingTable(data, showFilters) {
 }
 
 function formatDateParam(dateStr) {
-  return new Date(dateStr).toISOString().split("T")[0]; // YYYY-MM-DD
+  return new Date(dateStr).toISOString().split("T")[0]; 
 }
 
 function formatDate(dateString) {
@@ -128,7 +128,7 @@ async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
     const data = await res.json();
     if (res.ok) {
       alert("Booking deleted successfully");
-      fetchClinicBookings(); // Refresh table
+      fetchClinicBookings(); 
     } else {
       alert(data.error || "Failed to delete booking");
     }
@@ -168,7 +168,7 @@ function renderDoctorsTable(doctors) {
   bookingSection.style.display = "none";
   tbody.innerHTML = "";
 
-  // Group rows by doctorId if needed
+  
   doctors.forEach(doc => {
     const row = document.createElement("tr");
     row.innerHTML = `

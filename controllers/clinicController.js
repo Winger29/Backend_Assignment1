@@ -8,13 +8,13 @@ async function getBookingsForStaff(req, res) {
   }
 
   try {
-    // Step 1: Get clinicId from staffId
+    
     const clinicId = await clinicModel.getClinicIdByStaffId(staffId);
     if (!clinicId) {
       return res.status(404).json({ error: "No clinic assigned to this staff" });
     }
 
-    // Step 2: Fetch bookings for that clinic
+    
     const bookings = await clinicModel.getBookingsByClinicId(clinicId);
     res.status(200).json(bookings);
   } catch (err) {
@@ -25,7 +25,7 @@ async function getBookingsForStaff(req, res) {
 
 
 
-//Confirm booking (requires staff role)
+
 async function confirmBookingByStaff(req, res) {
   const { id: staffId, role } = req.user;
   const { clinicId, bookingDate, bookingSeq, userId } = req.params;
@@ -51,7 +51,7 @@ async function confirmBookingByStaff(req, res) {
   }
 }
 
-//Delete booking if status is 'cancelled'
+
 async function deleteCancelledBooking(req, res) {
   const { id: staffId, role } = req.user;
   const { bookingDate, bookingSeq, userId } = req.body;
@@ -89,7 +89,7 @@ async function cancelBooking(req, res) {
   }
 }
 
-//Get doctors and their available times for staff's clinic
+
 async function getDoctorsForStaffClinic(req, res) {
   const { id: staffId, role } = req.user;
 
