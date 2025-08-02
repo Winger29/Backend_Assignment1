@@ -2,6 +2,7 @@ const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 require("dotenv").config();
 
+//create senior
 async function createSenior(senior){
     let connection;
     try{
@@ -45,6 +46,7 @@ async function createSenior(senior){
     }
 }
 
+//create organiser
 async function createOrganiser(data) {
   let connection;
   try{
@@ -85,6 +87,7 @@ async function createOrganiser(data) {
   
 }
 
+//register staff only staff assigned to clinic only can register
 async function registerStaff({ staffId, clinicId, email, password, profileImage }) {
     let connection;
     try {
@@ -135,6 +138,7 @@ async function registerStaff({ staffId, clinicId, email, password, profileImage 
     }
 }
 
+//login with different role
 async function loginUser(role, email) {
   let connection;
   try {
@@ -173,6 +177,8 @@ async function loginUser(role, email) {
   }
 }
 
+
+//check email exist
 async function checkEmailExists(role, email) {
   let connection;
   try {
@@ -198,6 +204,7 @@ async function checkEmailExists(role, email) {
   }
 }
 
+//update senior
 async function updateSenior(seniorId, updatedSenior) {
   let connection;
   try {
@@ -242,7 +249,7 @@ async function updateSenior(seniorId, updatedSenior) {
   }
 }
 
-
+//update staff
 async function updateStaff(staffId, updatedStaff) {
   let connection;
   try {
@@ -300,6 +307,7 @@ async function updateStaff(staffId, updatedStaff) {
   }
 }
 
+//update organiser profile
 async function updateOrganiser(organiserId, updatedOrganiser) {
   let connection;
   try {
@@ -344,7 +352,7 @@ async function updateOrganiser(organiserId, updatedOrganiser) {
   }
 }
 
-
+//delete senior
 async function deleteSenior(seniorId){
     let connection;
     try {
@@ -362,6 +370,7 @@ async function deleteSenior(seniorId){
     }
 }
 
+//delete staff profile
 async function deleteStaff(staffId) {
     let connection;
     try {
@@ -384,6 +393,7 @@ async function deleteStaff(staffId) {
     }
 }
 
+//delete organiser profile
 async function deleteOrganiser(organiserId) {
   let connection;
   try {
@@ -401,6 +411,7 @@ async function deleteOrganiser(organiserId) {
   }
 }
 
+//get user profile
 async function getUserProfile(role, id) {
   let connection;
   try {
