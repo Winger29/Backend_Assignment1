@@ -1,6 +1,7 @@
 const sql = require("mssql");
 const dbConfig = require("../dbConfig");
 
+//get all clinic for booking form
 async function getAllClinics() {
   let connection;
   try {
@@ -15,6 +16,7 @@ async function getAllClinics() {
   }
 }
 
+//get all doctor for each clinic
 async function getDoctorsByClinicId(clinicId) {
     let connection;
     try{
@@ -39,6 +41,7 @@ async function getDoctorsByClinicId(clinicId) {
     }
 }
 
+//get available time for doctor at each clinic
 async function getAvailableTimeSlots(clinicId, doctorId, weekday) {
   let connection;
   try {
@@ -62,12 +65,13 @@ async function getAvailableTimeSlots(clinicId, doctorId, weekday) {
   }
 }
 
+//create booking
 async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId, userId, phone, type, status }) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
 
-    // Get the next booking sequence for this clinic and date
+    
     const seqResult = await connection.request()
       .input("clinicId", sql.VarChar, clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -80,7 +84,7 @@ async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId,
 
     const nextSeq = seqResult.recordset[0].nextSeq;
     const timeOnly = new Date(`1970-01-01T${appointmentTime}Z`);
-    // Insert the new booking
+    
     await connection.request()
       .input("clinicId", sql.VarChar, clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -110,6 +114,7 @@ async function createBooking({ clinicId, bookingDate, appointmentTime, doctorId,
   }
 }
 
+//get bookings booked by seniors
 async function fetchBookingsBySeniorId(seniorId) {
   let connection;
   try {
@@ -142,12 +147,13 @@ async function fetchBookingsBySeniorId(seniorId) {
   }
 }
 
+//cancel booking
 async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
 
-    // Only update if the booking belongs to the user
+    
     const result = await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -175,12 +181,13 @@ async function cancelBooking(clinicId, bookingDate, bookingSeq, userId) {
   }
 }
 
+//update booking time
 async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newTime) {
   let connection;
   try {
     connection = await sql.connect(dbConfig);
 
-    // Step 1: Get the doctorId for the booking
+    
     const result = await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -200,14 +207,14 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
 
     const doctorId = result.recordset[0].doctorId;
 
-    // Step 2: Get the day of the week from bookingDate
+    
     const dayNameResult = await connection.request()
       .input("bookingDate", sql.Date, bookingDate)
       .query(`SELECT DATENAME(WEEKDAY, @bookingDate) AS dayName`);
     
     const availableDay = dayNameResult.recordset[0].dayName;
 
-    // Step 3: Check doctor availability and conflicts
+    
     const availabilityCheck = await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("doctorId", sql.VarChar(10), doctorId)
@@ -235,7 +242,7 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
       throw new Error("Selected time is not available for this doctor on that day");
     }
 
-    // Step 4: Perform the update
+    
     await connection.request()
       .input("clinicId", sql.VarChar(10), clinicId)
       .input("bookingDate", sql.Date, bookingDate)
@@ -261,6 +268,7 @@ async function updateBookingTime(clinicId, bookingDate, bookingSeq, userId, newT
   }
 }
 
+//check to prevent double booking
 async function checkExistingBooking({ clinicId, doctorId, bookingDate, appointmentTime, userId }) {
   let connection;
   try{

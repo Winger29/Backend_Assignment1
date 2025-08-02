@@ -147,19 +147,11 @@ function showUpdateProfileForm() {
     event.preventDefault();
 
     const role = document.getElementById("role").value;
-    const password = document.getElementById("password").value;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
-
-    if (!passwordRegex.test(password)) {
-      alert("Password must be at least 8 characters, include one uppercase letter, one lowercase letter, one number, and one special character.");
-      return;
-    }
-
     const data = {
       role,
       fullName: document.getElementById("fullName").value,
       email: document.getElementById("email").value,
-      password,
+      password: document.getElementById("password").value,
     };
 
     if (role === "senior") {

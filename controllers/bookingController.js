@@ -1,6 +1,6 @@
 const bookingModel = require("../models/bookingModel");
 
-// 1. Get all clinics (name + location)
+//get all clinic for booking form
 async function getAllClinics(req, res) {
   try {
     const clinics = await bookingModel.getAllClinics();
@@ -10,7 +10,7 @@ async function getAllClinics(req, res) {
   }
 }
 
-// 2. Get doctors based on selected clinic name
+//get doctors info according to clinic Id
 async function getDoctorsByClinicId(req, res) {
   const { clinicId } = req.query;
   if (!clinicId) {
@@ -25,14 +25,14 @@ async function getDoctorsByClinicId(req, res) {
   }
 }
 
-// 3. Get available time slots (based on doctor & clinic & weekday)
+//get available slot of doctor at selected clinic
 async function getAvailableSlots(req, res) {
   const { clinicId, doctorId, date } = req.query;
   if (!clinicId || !doctorId || !date) {
     return res.status(400).json({ error: "clinicId, doctorId, and date are required" });
   }
 
-  const weekday = new Date(date).toLocaleString("en-US", { weekday: "long" }); // e.g., Monday
+  const weekday = new Date(date).toLocaleString("en-US", { weekday: "long" }); 
 
   try {
     const slots = await bookingModel.getAvailableTimeSlots(clinicId, doctorId, weekday);
@@ -42,9 +42,9 @@ async function getAvailableSlots(req, res) {
   }
 }
 
-// 4. Create a new booking (userId from token, clinic/doctor from frontend)
+//create booking
 async function createBooking(req, res) {
-  const userId = req.user?.id; // from JWT middleware
+  const userId = req.user?.id; 
   const {
     clinicId,
     doctorId,
@@ -58,7 +58,7 @@ async function createBooking(req, res) {
     return res.status(400).json({ error: "Missing required booking fields" });
   }
 
-  // Prevent backdate bookings
+  
   const today = new Date().toISOString().split("T")[0];
   if (bookingDate < today) {
     return res.status(400).json({ error: "Cannot book past dates" });
@@ -98,6 +98,7 @@ async function createBooking(req, res) {
   }
 }
 
+//to get you booked appointment
 async function getMyBookings(req, res) {
   const { id, role } = req.user;
 
@@ -114,6 +115,7 @@ async function getMyBookings(req, res) {
   }
 }
 
+//cancel booking
 async function cancelBooking(req, res) {
   const { clinicId, bookingDate, bookingSeq } = req.params;
   const { id: userId, role } = req.user;
@@ -131,6 +133,7 @@ async function cancelBooking(req, res) {
   }
 }
 
+//update booking Time
 async function updateBookingTime(req, res) {
   const { clinicId, bookingDate, bookingSeq } = req.params;
   const { appointmentTime } = req.body;
@@ -161,12 +164,12 @@ async function updateBookingTime(req, res) {
   } catch (err) {
     console.error("updateBookingTime controller error:", err);
 
-    // Handle known error
+    
     if (err.message.includes("not available")) {
       return res.status(400).json({ error: err.message });
     }
 
-    // Fallback
+    
     res.status(500).json({ error: "Unable to update booking time" });
   }
 }

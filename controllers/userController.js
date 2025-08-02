@@ -3,6 +3,7 @@ const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+//to register
 async function registerUser(req, res) {
   try {
     const { role,email,password } = req.body; 
@@ -29,7 +30,7 @@ async function registerUser(req, res) {
       userId = await userModel.createOrganiser(req.body);
     }
 
-    const token = jwt.sign({ id: userId, role }, process.env.SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ id: userId,role }, process.env.SECRET_KEY, { expiresIn: "12h" });
 
     return res.status(201).json({
       message: `${role.charAt(0).toUpperCase() + role.slice(1)} account created successfully`,
@@ -45,7 +46,7 @@ async function registerUser(req, res) {
   }
 }
 
-
+//login as senior, staff, organiser
 async function login(req, res) {
   const { role, email, password } = req.body;
 
@@ -55,18 +56,20 @@ async function login(req, res) {
 
   try {
     const user = await userModel.loginUser(role.toLowerCase(), email);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password." });
+    }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!user || !passwordMatch) {
+    if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
   const token = jwt.sign(
-  { id: user.userId, role: role.toLowerCase() },
+  { id: user.userId, role: role.toLowerCase(), Name: user.fullName },
   process.env.SECRET_KEY,
-  { expiresIn: "1h" }
+  { expiresIn: "1d" }
 );
-
     return res.status(200).json({
       message: `Welcome, ${user.fullName}`,
       userId: user.userId,
@@ -81,6 +84,7 @@ async function login(req, res) {
   }
 }
 
+//get user profile
 async function getProfile(req, res) {
   const { role, id } = req.user;
 
@@ -102,7 +106,7 @@ async function getProfile(req, res) {
   }
 }
 
-// === UPDATE SENIOR ===
+//update user profile
 async function updateProfile(req, res) {
   try {
     const { role, id } = req.user;
@@ -132,6 +136,7 @@ async function updateProfile(req, res) {
   }
 }
 
+//delete profile
 async function deleteProfile(req, res) {
   try {
     const { role, id } = req.user;
@@ -165,5 +170,3 @@ module.exports = {
     deleteProfile,
     getProfile,
 };
-
-

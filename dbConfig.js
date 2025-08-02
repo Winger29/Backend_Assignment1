@@ -4,8 +4,8 @@ const config = {
   server: process.env.DB_SERVER,
   database: process.env.DB_DATABASE,
   options: {
-    port: parseInt(process.env.DB_PORT),          // use true if on Azure
-    trustServerCertificate: true, // for local dev / self-signed certs
+    port: parseInt(process.env.DB_PORT),          
+    trustServerCertificate: true, 
   },
 };
 

@@ -1,5 +1,6 @@
 const clinicModel = require("../models/clinicModel");
 
+//get all appointment booked from seniors with their clinic
 async function getBookingsForStaff(req, res) {
   const { id: staffId, role } = req.user;
 
@@ -8,13 +9,13 @@ async function getBookingsForStaff(req, res) {
   }
 
   try {
-    // Step 1: Get clinicId from staffId
+    
     const clinicId = await clinicModel.getClinicIdByStaffId(staffId);
     if (!clinicId) {
       return res.status(404).json({ error: "No clinic assigned to this staff" });
     }
 
-    // Step 2: Fetch bookings for that clinic
+    
     const bookings = await clinicModel.getBookingsByClinicId(clinicId);
     res.status(200).json(bookings);
   } catch (err) {
@@ -23,9 +24,7 @@ async function getBookingsForStaff(req, res) {
   }
 }
 
-
-
-//Confirm booking (requires staff role)
+//to confirm appointment
 async function confirmBookingByStaff(req, res) {
   const { id: staffId, role } = req.user;
   const { clinicId, bookingDate, bookingSeq, userId } = req.params;
@@ -51,27 +50,7 @@ async function confirmBookingByStaff(req, res) {
   }
 }
 
-//Delete booking if status is 'cancelled'
-async function deleteCancelledBooking(req, res) {
-  const { id: staffId, role } = req.user;
-  const { bookingDate, bookingSeq, userId } = req.body;
-
-  if (role !== "staff") {
-    return res.status(403).json({ error: "Only staff can delete cancelled bookings" });
-  }
-
-  try {
-    const clinicId = await clinicModel.getClinicIdByStaffId(staffId);
-    const result = await clinicModel.deleteBookingIfCancelled(clinicId, bookingDate, bookingSeq, userId);
-
-    if (result.success) res.json({ message: "Booking deleted" });
-    else res.status(400).json({ error: `Deletion failed: ${result.reason}` });
-  } catch (err) {
-    console.error("deleteCancelledBooking error:", err);
-    res.status(500).json({ error: "Failed to delete booking" });
-  }
-}
-
+//cancel appointment by staff
 async function cancelBooking(req, res) {
   const { id: staffId, role } = req.user;
   const { bookingDate, bookingSeq, userId } = req.body;
@@ -89,7 +68,7 @@ async function cancelBooking(req, res) {
   }
 }
 
-//Get doctors and their available times for staff's clinic
+//to get docotor list for their clinic
 async function getDoctorsForStaffClinic(req, res) {
   const { id: staffId, role } = req.user;
 
@@ -108,6 +87,7 @@ async function getDoctorsForStaffClinic(req, res) {
   }
 }
 
+//to get clinic data for staff dashboard
 async function getClinicInfoForStaff(req, res) {
   const { id: staffId, role } = req.user;
 
@@ -134,7 +114,6 @@ async function getClinicInfoForStaff(req, res) {
 module.exports = {
   getBookingsForStaff,
   confirmBookingByStaff,
-  deleteCancelledBooking,
   getDoctorsForStaffClinic,
   cancelBooking,
   getClinicInfoForStaff

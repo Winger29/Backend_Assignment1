@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SeniorCare Messaging</title>
+  <link rel="stylesheet" href="style/layout.css">
+  <link rel="stylesheet" type="text/css" href="style/popup.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+
+  .right-links a {
+    color: #333333;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 60px);
+    background-color: #fcdede;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+  }
+
+  .sidebar a {
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+  }
+
+  .sidebar a:hover {
+    background-color: #f5b5b5;
+  }
+
+  .main-wrapper {
+    display: flex;
+    margin-left: 250px;
+    margin-top: 60px;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+  }
+
+  .group-sidebar {
+    width: 300px;
+    background-color: #fff;
+    border-right: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .group-search {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: white;
+  }
+
+  .group-list {
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  .custom-group-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .custom-group-item {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+    padding-right: 40px; /* to avoid overlap with options button */
+  }
+
+  .custom-group-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .custom-group-item.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .options-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 6px;
+    color: #333;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .options-btn:hover {
+    color: #000;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 35px;
+    right: 10px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    z-index: 100;
+    width: 100px;
+    user-select: none;
+  }
+
+  .dropdown-menu.hidden {
+    display: none;
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .chat-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .form-notification {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px;
+    background-color: #d4edda;
+    color: #155724;
+    font-weight: bold;
+    text-align: center;
+    border-top: 1px solid #c3e6cb;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 5;
+  }
+
+  .form-notification.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-top: 1px solid #f5c6cb;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f1f1f1;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .chat-window {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: visible; 
+    color:white;
+  }
+
+  #chat-topbar {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 16px;
+    flex-shrink: 0; 
+    font-size: 1.25rem;
+    font-weight: 600;
+    user-select: none;
+    position:relative;
+    z-index: 10;
+  }
+
+  .chat-messages {
+  display: flex;
+  flex-direction: column; /* stack top-down */
+  align-items: flex-start; /* align to left */
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px 16px;
+  background-color: #f9f9f9;
+  }
+
+
+  .message-input {
+    border-top: 1px solid #ccc;
+    padding: 10px 16px;
+    background-color: white;
+    flex-shrink: 0;
+  }
+
+  .input-group {
+    display: flex;
+  }
+
+  .form-control {
+    flex: 1;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+  .btn {
+    margin-left: 8px;
+    padding: 8px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+
+  .options-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  z-index: 9999;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.dropdown-menu.visible {
+  display: block;
+}
+
+.dropdown-menu.hidden {
+  display: none;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+
+.chat-message {
+  max-width: 70%;
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background-color: #e5e5ea;
+  color: #000;
+  align-self: flex-start;
+  word-wrap: break-word;
+  display: inline-block;
+  clear: both;
+  position: relative;
+  margin-left: 12px;
+  text-align: left;
+}
+
+
+.message-user {
+  font-weight: bold;
+}
+
+.message-text {
+  margin: 4px 0;
+}
+
+.message-time {
+  font-size: 0.8em;
+  color: gray;
+  text-align: right;
+}
+
+#chatDropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 9999;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  isolation: isolate;
+}
+
+.chat-message.sent {
+  max-width: 70%;
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background-color: #dcf8c6; /* light green like WhatsApp */
+  color: #000;
+  align-self: flex-end; /* aligns right */
+  word-wrap: break-word;
+  display: inline-block;
+  clear: both;
+  position: relative;
+  margin-right: 12px;
+  text-align: right;
+}
+
+.options-button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  float: right;
+}
+
+.options-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  right: 30px;  /* was 10px, increase to push it left */
+  z-index: 100;
+  padding: 5px 0;
+  width: 100px;
+}
+
+
+.options-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.options-item:hover {
+  background-color: #f0f0f0;
+}
+
+.hidden {
+  display: none;
+}
+
+.chat-message {
+  position: relative; /* so menu positions correctly */
+}
+
+.chat-messages {
+  padding-bottom: 50px; /* add extra space below messages */
+}
+
+.deleted-message .deleted-text {
+  font-style: italic;
+  color: gray;
+}
+
+</style>
+</head>
+<body>
+  <div class="main-wrapper" id="main-wrapper">
+    <div class="group-sidebar">
+      <div class="group-search">
+        <input type="text" id="groupSearchInput" placeholder="Search groups..." />
+      </div>
+      <ul class="custom-group-list group-list" id="custom-group-list">
+      </ul>
+      <button id="createGroupBtn" style="margin:10px;" onclick="showCreateGroupForm()">+ Create New Group</button>
+      <button id="joinGroupBtn" style="margin:10px;" onclick="window.location.href='joingroup.html'">Join Group</button>
+          </div>
+
+    <div class="chat-content">
+      <div class="chat-area">
+        <div class="chat-window">
+          <div id="chat-topbar" style="position: relative;">
+            <span id="groupNameDisplay">Select a group</span>
+            <button id="chatOptionsBtn" class="options-btn hidden" aria-label="Options" title="Options">⋮</button>
+            <div id="chatDropdownMenu" class="dropdown-menu hidden">
+              <div class="dropdown-item" id="editGroup">Edit</div>
+              <div class="dropdown-item" id="deleteGroup">Delete</div>
+            </div>
+          </div>          
+          </div>          
+          <div class="chat-messages" id="chat-messages">
+          </div>
+        </div>
+
+        <div class="message-input">
+          <div class="input-group">
+            <input type="text" class="form-control" id="messageInput" placeholder="Type a message...">
+            <button id="sendMessageBtn" class="btn btn-primary" type="button">Send message</button>
+            <button id="update-button" class="hidden">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script/layout.js"></script>
+  <script src="script/script.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script/groupchat.js"></script>
+</body>
+</html>
